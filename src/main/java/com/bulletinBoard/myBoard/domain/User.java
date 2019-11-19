@@ -2,10 +2,7 @@ package com.bulletinBoard.myBoard.domain;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -16,7 +13,7 @@ import javax.persistence.Id;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -31,15 +28,4 @@ public class User {
         this.name = user.name;
         this.email = user.email;
     }
-
-//    @Override
-//    public String toString() {
-//        return "User{" +
-//                "id=" + id +
-//                ", userId='" + userId + '\'' +
-//                ", password='" + password + '\'' +
-//                ", name='" + name + '\'' +
-//                ", email='" + email + '\'' +
-//                '}';
-//    }
 }
