@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default">
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+</th:block>
+
+<div layout:fragment="content">
+
+    <div class="container" id="main">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>사용자 아이디</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <th th:text="${user.id}"></th>
+                        <th th:text="${user.userId}"></th>
+                        <th th:text="${user.name}"></th>
+                        <th th:text="${user.email}"></th>
+                        <td><a th:href="@{/users/{id}/form(id=${user.id})}" class="btn btn-success"
+                               role="button">수정</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</html>
