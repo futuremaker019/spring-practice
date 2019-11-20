@@ -39,16 +39,37 @@ public class UserController {
     }
 
     @GetMapping("/{id}/form")
-    public String updateForm(@PathVariable Long id, Model model) {
-        User user = userRepository.findById(id).orElse(null);
+    public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
+        Object tempUser = session.getAttribute("sessionedUser");
+
+        if (tempUser == null) {
+            return "redirect:/users/loginForm";
+        }
+
+        User sessionedUser = (User) tempUser;
+
+        User user = userRepository.findById(sessionedUser.getId())
+                .orElseThrow(() -> new IllegalStateException("자신의 정보만 수정 할 수 있습니다."));
+
         model.addAttribute("user", user);
 
         return "/user/updateForm";
     }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id, User updatedUser, Model model) {
-        User user = userRepository.findById(id).orElse(null);
+    public String update(@PathVariable Long id, User updatedUser, HttpSession session) {
+        Object tempUser = session.getAttribute("sessionedUser");
+
+        if (tempUser == null) {
+            return "redirect:/users/loginForm";
+        }
+
+        User sessionedUser = (User) tempUser;
+
+        User user = userRepository.findById(sessionedUser.getId())
+                .orElseThrow(() -> new IllegalStateException(
+                        "You are not authorized to change another one's"));
+
         user.userUpdate(updatedUser);
         userRepository.save(user);
 
@@ -75,14 +96,14 @@ public class UserController {
         }
 
         System.out.println("Login Success");
-        session.setAttribute("user", user);
+        session.setAttribute("sessionedUser", user);
 
         return "redirect:/";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.removeAttribute("user");
+        session.removeAttribute("sessionedUser");
 
         return "redirect:/";
     }
