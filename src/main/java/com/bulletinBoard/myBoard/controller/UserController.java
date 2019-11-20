@@ -8,8 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Optional;
+
+import static com.bulletinBoard.myBoard.service.HttpSessionUtils.getUserFromSession;
+import static com.bulletinBoard.myBoard.service.HttpSessionUtils.isLoginUser;
 
 @Controller
 @RequestMapping("/users")
@@ -19,8 +20,8 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/form")
-    public String form() {
-        return "/user/form";
+    public String signInForm() {
+        return "/user/signInForm";
     }
 
     @PostMapping("")
@@ -40,16 +41,15 @@ public class UserController {
 
     @GetMapping("/{id}/form")
     public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-        Object tempUser = session.getAttribute("sessionedUser");
-
-        if (tempUser == null) {
+        if (!isLoginUser(session)) {
             return "redirect:/users/loginForm";
         }
 
-        User sessionedUser = (User) tempUser;
+        User loggedInUser = getUserFromSession(session);
 
-        User user = userRepository.findById(sessionedUser.getId())
-                .orElseThrow(() -> new IllegalStateException("자신의 정보만 수정 할 수 있습니다."));
+        User user = userRepository.findById(loggedInUser.getId())
+                .orElseThrow(() -> new IllegalStateException(
+                        "You are not authorized to change other's information"));
 
         model.addAttribute("user", user);
 
@@ -58,17 +58,15 @@ public class UserController {
 
     @PutMapping("/{id}")
     public String update(@PathVariable Long id, User updatedUser, HttpSession session) {
-        Object tempUser = session.getAttribute("sessionedUser");
-
-        if (tempUser == null) {
+        if (!isLoginUser(session)) {
             return "redirect:/users/loginForm";
         }
 
-        User sessionedUser = (User) tempUser;
+        User loggedInUser = getUserFromSession(session);
 
-        User user = userRepository.findById(sessionedUser.getId())
+        User user = userRepository.findById(loggedInUser.getId())
                 .orElseThrow(() -> new IllegalStateException(
-                        "You are not authorized to change another one's"));
+                        "You are not authorized to change other's information"));
 
         user.userUpdate(updatedUser);
         userRepository.save(user);
@@ -77,7 +75,8 @@ public class UserController {
     }
 
     @GetMapping("/loginForm")
-    public String loginForm() {
+    public String loginForm(HttpSession session) {
+
         return "/user/login";
     }
 
