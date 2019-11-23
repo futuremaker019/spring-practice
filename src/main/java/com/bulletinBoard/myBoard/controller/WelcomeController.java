@@ -15,6 +15,7 @@ public class WelcomeController {
     @GetMapping("")
     public String hello(Model model) {
         model.addAttribute("questions", questionRepository.findAll());
+//        model.addAttribute("LocalDateTime", LocalDateTime.now());
         return "index";
     }
 }

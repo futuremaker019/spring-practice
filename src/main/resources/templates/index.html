@@ -13,12 +13,12 @@
                         <div class="wrap">
                             <div class="main">
                                 <strong class="subject">
-                                    <a href="./qna/show.html" th:text="${question.title}">title</a>
+                                    <a th:href="@{/questions/{id}(id=${question.id})}" th:text="${question.title}">title</a>
                                 </strong>
                                 <div class="auth-info">
                                     <i class="icon-add-comment"></i>
-                                    <span class="time">2016-01-15 18:47</span>
-                                    <a href="./user/profile.html" class="author" th:text="${question.writer}">writer</a>
+                                    <span class="time" th:text="${#dates.format(date, 'dd-MM-yyyy HH:mm')}">2016-01-15 18:47</span>
+                                    <a href="./user/profile.html" class="author" th:text="${question.writer.userId}">writer</a>
                                 </div>
                                 <div class="reply" title="댓글">
                                     <i class="icon-reply"></i>
