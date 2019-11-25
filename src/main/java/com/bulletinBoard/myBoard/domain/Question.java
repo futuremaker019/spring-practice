@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,14 +30,19 @@ public class Question {
     @Lob
     private String contents;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createDate;
 
-    public String getFormattedCreateDate() {
-        if (createDate == null) {
-            return "";
-        }
-        return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
-    }
+    @OneToMany(mappedBy = "question")
+    @OrderBy("id ASC")
+    private List<Answer> answers;
+
+//    public String getFormattedCreateDate() {
+//        if (createDate == null) {
+//            return "";
+//        }
+//        return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+//    }
 
     public void update(String title, String contents) {
         this.title = title;
