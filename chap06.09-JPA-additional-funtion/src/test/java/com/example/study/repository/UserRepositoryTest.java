@@ -37,8 +37,18 @@ public class UserRepositoryTest extends StudyApplicationTests {
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
         user.setRegisteredAt(registeredAt);
+
+        // JPA Auditing을 이용해 update를 이용한 date변경 적용
 //        user.setCreatedAt(createdAt);
 //        user.setCreatedBy(createdBy);
+
+        // builder 패턴을 사용하여 객체를 생성함
+//        User u = User.builder()
+//                .account(account)
+//                .password(password)
+//                .status(status)
+//                .email(email)
+//                .build();
 
         User newUser = userRepository.save(user);
 
@@ -51,6 +61,12 @@ public class UserRepositoryTest extends StudyApplicationTests {
     @Transactional
     public void read() {
         User user = userRepository.findFirstByPhoneNumberOrderByIdDesc("010-1111-2222").orElse(null);
+
+        // @Accessors(chain = ture)를 이용한 setter 체인
+//        user
+//            .setEmail("")
+//            .setPhoneNumber("")
+//            .setStatus("")
 
         user.getOrderGroupList().stream().forEach(orderGroup -> {
 
