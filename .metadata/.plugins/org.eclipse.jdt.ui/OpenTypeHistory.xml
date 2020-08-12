@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+    <typeInfo handle="=ex00/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.sample{Chef.java[Chef" modifiers="1" timestamp="1596097964125"/>
+    <typeInfo handle="=ex00/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.sample{Restaurant.java[Restaurant" modifiers="1" timestamp="1596097900393"/>
+    <typeInfo handle="=jex00/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.config{RootConfig.java[RootConfig" modifiers="1" timestamp="1596461220506"/>
+    <typeInfo handle="=ex00/src\/test\/java=/test=/true=/=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.persistence{TimeMapperTests.java[TimeMapperTests" modifiers="1" timestamp="1596464702876"/>
+    <typeInfo handle="=jex01/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.config{WebConfig.java[WebConfig" modifiers="1" timestamp="1596599772752"/>
+    <typeInfo handle="=ex02/src\/test\/java=/test=/true=/=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.mapper{BoardMapperTests.java[BoardMapperTests" modifiers="1" timestamp="1597117646143"/>
+    <typeInfo handle="=ex02/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;org.zerock.mapper{BoardMapper.java[BoardMapper" modifiers="513" timestamp="1597115864075"/>
+</typeInfoHistroy>
