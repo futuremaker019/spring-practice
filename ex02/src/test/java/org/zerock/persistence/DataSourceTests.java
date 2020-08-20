@@ -23,12 +23,9 @@ public class DataSourceTests {
 	@Setter(onMethod_ = {@Autowired})
 	private DataSource dataSource;
 	
-	@Test
-	public void testConnection() {
-		try (Connection con = dataSource.getConnection()){
-			log.info(con);
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+	/*
+	 * @Test public void testConnection() { try (Connection con =
+	 * dataSource.getConnection()){ log.info(con); } catch (Exception e) {
+	 * fail(e.getMessage()); } }
+	 */
 }
