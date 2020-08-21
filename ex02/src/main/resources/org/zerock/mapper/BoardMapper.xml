@@ -14,6 +14,19 @@
 			select * from tbl_board where bno = #{bno}
 		</select>
 		
+		<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+			<![CDATA[
+				select bno, title, content, writer, regdate, updatedate
+				from (
+						select /*+INDEX_DESC(tbl_board pk_board)*/
+						rownum rn, bno, title, content, writer, regdate, updatedate
+						from tbl_board
+						where rownum <= #{pageNum} * #{amount}
+					)
+				where rn > (#{pageNum} - 1) * #{amount}
+			]]>
+		</select>
+		
 		<insert id="insert">
 			insert into tbl_board (bno,title,content,writer)
 			values (seq_board.nextval, #{title}, #{content}, #{writer})
@@ -34,10 +47,10 @@
 		
 		<update id="update">
 			update tbl_board
-			set title=#{title},
-			content=#{content},
-			writer=#{writer},
-			updatedate=sysdate
-			where bno=${bno}
+			set title = #{title},
+			content = #{content},
+			writer = #{writer},
+			updatedate = sysdate
+			where bno = ${bno}
 		</update>
 	</mapper>
