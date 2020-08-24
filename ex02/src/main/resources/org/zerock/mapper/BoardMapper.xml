@@ -27,6 +27,10 @@
 			]]>
 		</select>
 		
+		<select id="getTotalCount" resultType="int">
+			select count(*) from tbl_board where bno > 0
+		</select>
+		
 		<insert id="insert">
 			insert into tbl_board (bno,title,content,writer)
 			values (seq_board.nextval, #{title}, #{content}, #{writer})
