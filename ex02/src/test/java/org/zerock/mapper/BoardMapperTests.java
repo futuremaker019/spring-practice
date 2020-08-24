@@ -70,15 +70,24 @@ public class BoardMapperTests {
 	 * log.info("Update Count : " + count); }
 	 */
 	
+	/*
+	 * @Test public void testPaging() { Criteria cri = new Criteria(); //10개씩 3페이지
+	 * cri.setPageNum(3); cri.setAmount(10);
+	 * 
+	 * List<BoardVO> list = boardMapper.getListWithPaging(cri);
+	 * 
+	 * list.forEach(board -> log.info(board.getBno())); }
+	 */
+	
 	@Test
-	public void testPaging() {
+	public void testSearch() {
+		
 		Criteria cri = new Criteria();
-		//10개씩 3페이지
-		cri.setPageNum(3);
-		cri.setAmount(10);
+		cri.setKeyword("새로");
+		cri.setType("TC");
 		
 		List<BoardVO> list = boardMapper.getListWithPaging(cri);
 		
-		list.forEach(board -> log.info(board.getBno()));
+		list.forEach(board -> log.info(board));
 	}
 }
