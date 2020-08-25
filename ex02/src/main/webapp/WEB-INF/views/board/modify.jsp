@@ -24,6 +24,8 @@
 					<!-- pageNum과 amount를 form에 추가한다. -->
 					<input type="hidden" name="pageNum" value='<c:out value="${cri.pageNum }"/>'>
 					<input type="hidden" name="amount" value='<c:out value="${cri.amount }"/>'>
+					<input type="hidden" name="type" value='<c:out value="${cri.type }"/>'>
+					<input type="hidden" name="keyword" value='<c:out value="${cri.keyword }"/>'>
 				
 					<div class="form-group">
 						<label>Bno</label>
@@ -95,11 +97,15 @@
 				formObj.attr("action", "/board/list").attr("method", "get");
 				var pageNumTag = $("input[name='pageNum']").clone();
 				var amountTag = $("input[name='amount']").clone();
+				var typeTag = $("input[name='type']").clone();
+				var keywordTag = $("input[name='keyword']").clone();
 				
 				// form 내의 모든 태그를 삭제-전달하는 파라미터가 없기때문에
 				formObj.empty();
 				formObj.append(pageNumTag);
 				formObj.append(amountTag);
+				formObj.append(typeTag);
+				formObj.append(keywordTag);
 			}
 			formObj.submit();
 		});
