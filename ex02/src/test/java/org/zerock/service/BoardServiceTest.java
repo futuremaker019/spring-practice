@@ -44,12 +44,15 @@ public class BoardServiceTest {
 	 */
 	
 	/*
-	 * @Test public void testModify() { BoardVO boardVO = boardService.get(1L);
+	 * @Test public void testModify() { 
+	 * 
+	 * BoardVO boardVO = boardService.get(1L);
 	 * 
 	 * if (boardVO == null) { return; }
 	 * 
-	 * boardVO.setTitle("제목 수정합니다2."); log.info("Modify Result : " +
-	 * boardService.modify(boardVO)); }
+	 * boardVO.setTitle("제목 수정합니다2."); 
+	 * log.info("Modify Result : " +  boardService.modify(boardVO)); 
+	 * }
 	 */
 	
 	/*

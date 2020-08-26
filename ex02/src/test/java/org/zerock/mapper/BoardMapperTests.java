@@ -62,7 +62,9 @@ public class BoardMapperTests {
 	 * @Test public void testUpdate() { BoardVO boardVO = new BoardVO();
 	 * 
 	 * // setter를 이용하여 입력된 값이 변수로 들어간다. mapper 객체에 전달되어 mapper.xml을 실행
-	 * boardVO.setBno(5L); boardVO.setTitle("수정된 제목"); boardVO.setContent("수정된 내용");
+	 * boardVO.setBno(5L); 
+	 * boardVO.setTitle("수정된 제목"); 
+	 * boardVO.setContent("수정된 내용");
 	 * boardVO.setWriter("modified user");
 	 * 
 	 * int count = boardMapper.update(boardVO);
