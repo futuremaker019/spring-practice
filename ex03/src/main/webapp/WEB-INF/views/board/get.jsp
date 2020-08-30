@@ -58,6 +58,23 @@
 </div>
 <!-- end row -->
 
+<script type="text/javascript" src="/resources/js/reply.js"></script>
+
+<script>
+	console.log("===================");
+	console.log("JS test");
+
+	var bnoValue = '<c:out value = "${board.bno}"/>';
+
+	// for replyService and test
+	replyService.add(
+		{reply:"JS TESt",replyer:"tester",bno:bnoValue},
+		function(result){
+			alert("Result: " + result);
+		}
+	);
+</script>
+
 <script type="text/javascript">
 	$(document).ready(function(){
 		var operForm = $("#operForm");
