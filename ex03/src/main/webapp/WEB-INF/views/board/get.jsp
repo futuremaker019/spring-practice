@@ -66,12 +66,12 @@
 
 	var bnoValue = '<c:out value = "${board.bno}"/>';
 
-	// for replyService and test
-	replyService.add(
-		{reply:"JS TESt",replyer:"tester",bno:bnoValue},
-		function(result){
-			alert("Result: " + result);
-		}
+	replyService.getList(
+		{bno:bnoValue, page:1}, function(list) {
+			for (var i = 0, len = list.length || 0; i < len; i++){
+				console.log(list[i]);
+			}
+		}		
 	);
 </script>
 
