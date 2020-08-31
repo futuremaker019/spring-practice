@@ -164,7 +164,8 @@
 		$(".move").on("click", function(e){
 			e.preventDefault();
 			
-			// value에서 +의 정체를 알고 싶다...
+			// value에서 +의 정체를 알고 싶다... 
+			//별거 아니다. jquery를 사용하여 string을 + 로 연결해준것일뿐.. 
 			actionForm.append("<input type='hidden' name='bno' value='"+$(this).attr("href")+"' >");
 			actionForm.attr("action", "/board/get");
 			actionForm.submit();
