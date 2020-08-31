@@ -66,13 +66,45 @@
 
 	var bnoValue = '<c:out value = "${board.bno}"/>';
 
+	/*
+	댓글 리스트 불러오기 테스트
 	replyService.getList(
-		{bno:bnoValue, page:1}, function(list) {
+		{bno:bnoValue, page:1}, 
+		function(list) {
 			for (var i = 0, len = list.length || 0; i < len; i++){
 				console.log(list[i]);
 			}
 		}		
 	);
+	*/
+
+	// 23번 댓글 삭제 테스트
+	/*
+	replyService.remove(23, function (count) {
+		console.log(count);
+
+		if (count === "success") {
+			alert("Removed");
+		}		
+	}, function (err) {
+		alert('Error....');
+	}); 
+	*/
+
+	//22번 댓글 수정
+	/*
+	replyService.update( 
+		{rno : 22, bno : bnoValue, reply : "reply Modifed"},
+		function (result) {
+			alert("수정 완료!!");
+	});
+	*/
+
+	//get 으로 댓글 받아오기
+	replyService.get(10, function(data) {
+		console.log(data);
+	});
+
 </script>
 
 <script type="text/javascript">
