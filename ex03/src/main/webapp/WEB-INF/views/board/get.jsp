@@ -145,8 +145,19 @@
 		var bnoValue = '<c:out value = "${board.bno}"/>';
 		var replyUL = $(".chat");
 		
+		var modal = $(".modal");
+		var modalInputReply = modal.find("input[name='reply']");
+		var modalInputReplyer = modal.find("input[name='replyer']");
+		var modalInputReplyDate = modal.find("input[name='replyDate']");
+		
+		var modalModBtn = $("#modalModBtn");
+		var modalRemoveBtn = $("#modalRemoveBtn");
+		var modalRegisterBtn = $("#modalRegisterBtn");
+		var modalCloseBtn = $("#modalCloseBtn");
+		
 		showList(1);
 		
+		// content 클릭 시, 첫 페이지에 나타나는 댓글 목록 가져오는 이벤트 처리
 		function showList(page) {
 			replyService.getList({bno:bnoValue, page:page || 1}, function(list){
 				
@@ -166,15 +177,7 @@
 			}); //end replyService function
 		} // end showList
 		
-		var modal = $(".modal");
-		var modalInputReply = modal.find("input[name='reply']");
-		var modalInputReplyer = modal.find("input[name='replyer']");
-		var modalInputReplyDate = modal.find("input[name='replyDate']");
-		
-		var modalModBtn = $("#modalModBtn");
-		var modalRemoveBtn = $("#modalRemoveBtn");
-		var modalRegisterBtn = $("#modalRegisterBtn");
-		
+		// 'New Reply' 버튼 클릭 이벤트 처리
 		$("#addReplyBtn").on("click", function(e){
 			
 			modal.find("input").val("");
@@ -187,6 +190,34 @@
 			
 		});
 		
+		// 댓글 클릭 이벤트 처리
+		$(".chat").on("click", "li", function(e){
+			
+			var rno = $(this).data("rno");
+			
+			replyService.get(rno, function(reply){
+				/* console.log(reply); */
+				
+				modalInputReply.val(reply.reply);
+				modalInputReplyer.val(reply.replyer);
+				modalInputReplyDate.val(replyService.displayTime(reply.replyDate))
+						.attr("readonly", "readonly");
+				
+				// 이건 뭘 의미하나...
+				// modal의 rno를 reply 객체에서 전달받은 rno로 초기화 한다??
+				/*console.log(modal.data("rno")); */
+				modal.data("rno", reply.rno);
+				/* console.log(modal.data("rno", reply.rno)); */
+				
+				modal.find("button[id != 'modalCloseBtn']").hide();
+				modalModBtn.show();
+				modalRemoveBtn.show();
+				
+				$(".modal").modal("show");
+			});
+		});
+		
+		// Register button 이벤트 처리
 		modalRegisterBtn.on("click", function(e){
 			
 			var reply = {
@@ -194,15 +225,40 @@
 				replyer : modalInputReplyer.val(),
 				bno : bnoValue
 			};
+			
 			replyService.add(reply, function(result){
 				
 				alert(result);
-				
 				modal.find("input").val("");
 				modal.modal("hide");
-				
 				showList(1);
 			});			
+		});
+		
+		modalModBtn.on("click", function(e){
+			
+			var reply = {rno:modal.data("rno"), reply:modalInputReply.val()};
+			
+			replyService.update(reply, function(result){
+				alert(result);
+				modal.modal("hide");
+				showList(1);
+			});
+		});
+		
+		modalRemoveBtn.on("click", function(e){
+			
+			var rno = modal.data("rno");
+			
+			replyService.remove(rno, function(result){
+				alert(result);
+				modal.modal("hide");
+				showList(1);
+			});
+		});
+		
+		modalCloseBtn.on("click", function(e){
+			modal.modal("hide");
 		});
 	});
 </script>
