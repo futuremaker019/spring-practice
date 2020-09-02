@@ -186,8 +186,7 @@
 			
 			modalRegisterBtn.show();
 			
-			$(".modal").modal("show");
-			
+			$(".modal").modal("show");			
 		});
 		
 		// 댓글 클릭 이벤트 처리
@@ -232,7 +231,7 @@
 				modal.find("input").val("");
 				modal.modal("hide");
 				showList(1);
-			});			
+			});
 		});
 		
 		modalModBtn.on("click", function(e){

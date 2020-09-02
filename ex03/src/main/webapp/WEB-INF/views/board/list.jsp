@@ -18,8 +18,7 @@
          <div class="panel panel-default">
              <div class="panel-heading">
                  Board List Page
-                 <button id="regBtn" type="button" class="btn btn-xs pull-right">
-                 Register New Board</button>
+                 <button id="regBtn" type="button" class="btn btn-xs pull-right">Register New Board</button>
              </div>
              <!-- /.panel-heading -->
              <div class="panel-body">
@@ -95,6 +94,7 @@
           			<input type="hidden" name="keyword" value="${pageMaker.cri.keyword }">
           		</form>
                  
+                 <!--  -->
                 <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
                  aria-labelledby="myModalLabel" aria-hidden="true">
                  	<div class="modal-dialog">
@@ -129,11 +129,16 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		var result = '<c:out value="${result}"/>';
+		var actionForm = $("#actionForm");
+		var searchForm = $("#searchForm");
 		
 		checkModal(result);
 		
+		/* 뒤로가기 및 앞으로 가기 클릭 시, 미리 일어난 이벤트를 반복적으로 처리 되는 것을 막는다. */
+		/* history를 비워주는 역할을 하는 것이 아닐까한다. */
 		history.replaceState({}, null, null);
 		
+		/* 게시글 등록 확인 모달 이벤트 처리 */
 		function checkModal(result) {
 			if (result === '' || history.state) {
 				return;
@@ -144,11 +149,10 @@
 			$("#myModal").modal("show");
 		}
 		
+		//
 		$("#regBtn").on("click", function(){
 			self.location = "/board/register";
 		});
-		
-		var actionForm = $("#actionForm");
 		
 		$(".paginate_button a").on("click", function(e) {
 			
@@ -161,17 +165,16 @@
 			actionForm.submit();
 		});
 		
+		// a 태그의 content를 클릭 시 발생하는 이벤트
 		$(".move").on("click", function(e){
 			e.preventDefault();
 			
 			// value에서 +의 정체를 알고 싶다... 
 			//별거 아니다. jquery를 사용하여 string을 + 로 연결해준것일뿐.. 
-			actionForm.append("<input type='hidden' name='bno' value='"+$(this).attr("href")+"' >");
+			actionForm.append("<input type='hidden' name='bno' value='"+ $(this).attr("href") +"' >");
 			actionForm.attr("action", "/board/get");
 			actionForm.submit();
 		});
-		
-		var searchForm = $("#searchForm");
 		
 		$("#searchForm button").on("click", function(e){
 			

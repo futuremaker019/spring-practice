@@ -4,16 +4,8 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 	<mapper namespace="org.zerock.mapper.BoardMapper">
-		<select id="getList" resultType="org.zerock.domain.BoardVO">
-			<![CDATA[
-				select * from tbl_board where bno > 0 order by bno asc
-			]]>
-		</select>
 		
-		<select id="read" resultType="org.zerock.domain.BoardVO">
-			select * from tbl_board where bno = #{bno}
-		</select>
-		
+		<!-- 검색 관련 쿼리 -->
 		<sql id="criteria">
 			<trim prefix="(" suffix=") AND " prefixOverrides="OR">
 				<foreach item="type" collection="typeArr">
@@ -33,6 +25,16 @@
 				</foreach>
 			</trim>
 		</sql>
+		
+		<select id="getList" resultType="org.zerock.domain.BoardVO">
+			<![CDATA[
+				select * from tbl_board where bno > 0 order by bno asc
+			]]>
+		</select>
+		
+		<select id="read" resultType="org.zerock.domain.BoardVO">
+			select * from tbl_board where bno = #{bno}
+		</select>
 		
 		<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
 			<![CDATA[

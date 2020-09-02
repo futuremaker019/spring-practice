@@ -62,13 +62,23 @@ public class ReplyMapperTest {
 	 * log.info("Update Count: " + count); }
 	 */
 	
+	/*
+	 * @Test public void testList() {
+	 * 
+	 * Criteria cri = new Criteria();
+	 * 
+	 * List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]);
+	 * 
+	 * log.info(replies); }
+	 */
+	
 	@Test
-	public void testList() {
+	public void testList2() {
+		Criteria cri = new Criteria(1,10);
 		
-		Criteria cri = new Criteria();
+		// 1179660
+		List<ReplyVO> replyList = mapper.getListWithPaging(cri, 1179660L);
 		
-		List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]);
-		
-		log.info(replies);
+		replyList.forEach(reply -> log.info(reply));
 	}
 }

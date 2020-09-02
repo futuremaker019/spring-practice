@@ -88,7 +88,7 @@
 			
 			/* consol.log(operation); */
 			
-			if(operation === 'remove') {
+			if (operation === 'remove') {
 				formObj.attr("action", "/board/remove");
 			} else if (operation === "list") {
 				/* self.location = "/board/list"; */
