@@ -86,6 +86,12 @@
 				<!-- /. end ul -->
 			</div>
 			<!-- /.end chat panel-body -->
+			
+			<div class="panel-footer">
+				
+			</div>
+			<!-- /.end chat panel-footer -->
+			
 		</div>
 	</div>
 </div>
@@ -136,6 +142,12 @@
 	<div><div class='header'><strong class='primary-font'>"+list[i].replyer+"</strong>
 			<small class='pull-right text-muted'>"+list[i].replyDate+"</small></div>
 		<p>"+list[i].reply+"</p></div></li> -->
+		
+<!-- <div><ul class='pagination pull-right'>
+	<li class='page-item'><a class='page-link' href='"+ (startNum - 1) +"'>Previous</a></li>
+	<li class='page-item " + active + "'><a class='page-link' href='"+ i +"'></a></li>
+	<li class='page-item'><a class='page-link' href='"+ (endPage + 1) +"'>Next</a></li>
+</ul></div> -->
 
 <script type="text/javascript" src="/resources/js/reply.js"></script>
 
@@ -155,17 +167,34 @@
 		var modalRegisterBtn = $("#modalRegisterBtn");
 		var modalCloseBtn = $("#modalCloseBtn");
 		
+		var pageNum = 1;
+		var replyPageFooter = $(".panel-footer");
+		
 		showList(1);
 		
-		// content 클릭 시, 첫 페이지에 나타나는 댓글 목록 가져오는 이벤트 처리
+		// content 클릭 시, 첫 페이지의 댓글 목록 가져오는 이벤트 처리
 		function showList(page) {
-			replyService.getList({bno:bnoValue, page:page || 1}, function(list){
-				
+			replyService.getList({bno:bnoValue, page:page || 1}, function(replyCnt, list){
+
+				console.log("replyCnt : " + replyCnt);
+				console.log("list : " + list);
+
 				var str = "";
+
+				if (page == -1) {
+					// 가장 마지막 페이지를 보여준다.
+					// 나머지를 제외한 반올림(전체 댓글수 / 한 페이지의 댓글수) = 마지막 페이지 번호
+					pageNum = Math.ceil(replyCnt/10.0);
+					showList(pageNum);
+					return;
+				}
+				
 				if(list == null || list.length == 0) {
 					replyUL.html("");
 					return;
 				}
+				
+				// 댓글 목록을 itaration으로 가져온다.
 				for(var i = 0, len = list.length || 0; i < len; i++) {
 					str += "<li class='left clearfix' data-rno='" + list[i].rno + "'>";
 					str += "<div><div class='header'><strong class='primary-font'>" + list[i].replyer + "</strong>";
@@ -174,8 +203,49 @@
 				}
 				
 				replyUL.html(str);
+				
+				showReplyPage(replyCnt);
 			}); //end replyService function
 		} // end showList
+		
+		function showReplyPage(replyCnt) {
+			var endNum = Math.ceil(pageNum / 10.0) * 10;
+			var startNum = endNum - 9;
+			
+			var prev = (startNum != 1);
+			var next = false;
+			
+			// 마지막 페이지 * 10(한 페이지의 탯글수) = 10페이지 까지의 총 댓글수
+			if(endNum * 10 >= replyCnt) {
+				endNum = Math.ceil(replyCnt / 10.0);
+			}
+			
+			if(endNum * 10 < replyCnt) {
+				next = true;
+			}
+			
+			var str = "<ul class='pagination pull-right'>";
+			
+			if(prev) {
+				str += "<li class='page-item'><a class='page-link' href='"+ (startNum - 1) +"'>Previous</a></li>"; 
+			}
+			
+			for (var i = startNum; i <= endNum; i++) {
+				/* var active = pageNum == 1 ? "active" : ""; */
+				
+				str += "<li class='page-item'><a class='page-link' href='"+ i +"'>"+ i +"</a></li>";
+			}
+			
+			if(next) {
+				str += "<li class='page-item'><a class='page-link' href='"+ (endNum + 1) +"'>Next</a></li>";
+			}
+			
+			str += "</ul>";
+			
+			console.log(str);
+			
+			replyPageFooter.html(str);
+		}
 		
 		// 'New Reply' 버튼 클릭 이벤트 처리
 		$("#addReplyBtn").on("click", function(e){
@@ -217,6 +287,7 @@
 		});
 		
 		// Register button 이벤트 처리
+		// 새 댓글을 등록하면 가장 마지막 페이지(page = -1)를 보여준다.
 		modalRegisterBtn.on("click", function(e){
 			
 			var reply = {
@@ -228,9 +299,12 @@
 			replyService.add(reply, function(result){
 				
 				alert(result);
+				
 				modal.find("input").val("");
 				modal.modal("hide");
-				showList(1);
+				
+				/* showList(1); */
+				showList(-1);
 			});
 		});
 		
@@ -241,7 +315,7 @@
 			replyService.update(reply, function(result){
 				alert(result);
 				modal.modal("hide");
-				showList(1);
+				showList(pageNum);
 			});
 		});
 		
@@ -252,13 +326,27 @@
 			replyService.remove(rno, function(result){
 				alert(result);
 				modal.modal("hide");
-				showList(1);
+				showList(pageNum);
 			});
 		});
 		
 		modalCloseBtn.on("click", function(e){
 			modal.modal("hide");
 		});
+		
+		// 댓글 페이지 번호 클릭 시 해당 댓글 목록 페이지를 보여주는 이벤트 처리
+		replyPageFooter.on("click","li a", function(e){
+			e.preventDefault();
+			console.log("page click");
+			
+			var targetPageNum = $(this).attr("href");
+			
+			console.log("targetPageNum : " + targetPageNum);
+			
+			pageNum = targetPageNum;
+			
+			showList(pageNum);
+		})
 	});
 </script>
 

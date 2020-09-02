@@ -13,12 +13,7 @@
 		select * from tbl_reply 
 		where rno = #{rno}
 	</select>
-	<!-- <select id="getListWithPaging" resultType="org.zerock.domain.ReplyVO">
-		select rno, bno, reply, replyer, replyDate, updateDate
-		from tbl_reply
-		where bno = #{bno}
-		order by rno asc
-	</select> -->
+	
 	<select id="getListWithPaging" resultType="org.zerock.domain.ReplyVO">
 		<![CDATA[
 			select rno, bno, reply, replyer, replyDate, updatedate

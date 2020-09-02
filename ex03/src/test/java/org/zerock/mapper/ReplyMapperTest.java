@@ -27,15 +27,20 @@ public class ReplyMapperTest {
 	
 	/* @Test public void testMapper() { log.info(mapper); } */
 	  
-	/*
-	 * @Test public void testCreate() { // 1에서 5의 반복수를 넣기 위해 intstream을 활용해였다.
-	 * IntStream.rangeClosed(1, 10).forEach(i -> { ReplyVO vo = new ReplyVO();
-	 * 
-	 * vo.setBno(bnoArr[i % 5]); System.out.println(bnoArr[i%5]);
-	 * vo.setReply("댓글 테스트  " + i); vo.setReplyer("replyer" + i);
-	 * 
-	 * mapper.insert(vo); }); }
-	 */
+	
+	  @Test 
+	  public void testCreate() { // 1에서 5의 반복수를 넣기 위해 intstream을 활용해였다.
+		  IntStream.rangeClosed(1, 10).forEach(i -> { 
+			  ReplyVO vo = new ReplyVO();
+		  
+			  vo.setBno(bnoArr[i % 5]); 
+			  vo.setReply("댓글 테스트  " + i); 
+			  vo.setReplyer("replyer" + i);
+			  
+			  mapper.insert(vo); 
+	 	 }); 
+	  }
+	 
 	 
 	
 	/*
@@ -72,13 +77,11 @@ public class ReplyMapperTest {
 	 * log.info(replies); }
 	 */
 	
-	@Test
-	public void testList2() {
-		Criteria cri = new Criteria(1,10);
-		
-		// 1179660
-		List<ReplyVO> replyList = mapper.getListWithPaging(cri, 1179660L);
-		
-		replyList.forEach(reply -> log.info(reply));
-	}
+	/*
+	 * @Test public void testList2() { Criteria cri = new Criteria(1,10);
+	 * 
+	 * // 1179660 List<ReplyVO> replyList = mapper.getListWithPaging(cri, 1179660L);
+	 * 
+	 * replyList.forEach(reply -> log.info(reply)); }
+	 */
 }

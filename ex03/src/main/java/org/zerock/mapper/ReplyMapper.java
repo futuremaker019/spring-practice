@@ -20,7 +20,5 @@ public interface ReplyMapper {
 	public List<ReplyVO> getListWithPaging(@Param("cri") Criteria cri, 
 											@Param("bno") Long bno);
 	
-	// 갑자기 드는 궁금증
-	// 이 함수의 파라미터는 어디서 어떻게 받아오는가
 	public int  getCountByBno(Long bno);
 }
