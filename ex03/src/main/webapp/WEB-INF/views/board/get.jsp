@@ -346,7 +346,7 @@
 			pageNum = targetPageNum;
 			
 			showList(pageNum);
-		})
+		});
 	});
 </script>
 
