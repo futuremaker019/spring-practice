@@ -21,6 +21,9 @@
 			<input type="password" name="password" value='pw90'>
 		</div>
 		<div>
+			<input type="checkbox" name="remember-me"> Remember me
+		</div>
+		<div>
 			<input type="submit">
 		</div>
 		<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
