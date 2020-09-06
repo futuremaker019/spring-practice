@@ -1,5 +1,6 @@
 package org.zerock.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,7 +39,14 @@ public class BoardController {
 		model.addAttribute("pageMaker", new PageDTO(cri, total));
 	}
 	
+	@GetMapping("/register")
+	@PreAuthorize("isAuthenticated()")
+	public void register() {
+		
+	}
+	
 	@PostMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public String register(BoardVO boardVO, RedirectAttributes rttr) {
 		
 		log.info("register : " + boardVO);
@@ -61,6 +69,7 @@ public class BoardController {
 		model.addAttribute("board", service.get(bno));
 	}
 	
+	@PreAuthorize("principal.username == #board.writer")
 	@PostMapping("/modify")
 	public String modify(BoardVO boardVO, 
 						@ModelAttribute("cri") Criteria cri, 
@@ -82,6 +91,7 @@ public class BoardController {
 		return "redirect:/board/list" + cri.getListLink();
 	}
 	
+	@PreAuthorize("principal.username == #board.writer")
 	@PostMapping("/remove")
 	public String remove(@RequestParam("bno") Long bno, 
 						@ModelAttribute("cri") Criteria cri, 
@@ -101,10 +111,5 @@ public class BoardController {
 		 */
 		
 		return "redirect:/board/list" + cri.getListLink();
-	}
-	
-	@GetMapping("/register")
-	public void register() {
-		
 	}
 }

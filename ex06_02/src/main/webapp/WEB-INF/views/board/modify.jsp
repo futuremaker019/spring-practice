@@ -3,6 +3,8 @@
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
     
 <%@include file="../includes/header.jsp" %>
 
@@ -20,6 +22,8 @@
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form role="form" action="/board/modify" method="post">
+				
+					<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"/>
 				
 					<!-- pageNum과 amount를 form에 추가한다. -->
 					<input type="hidden" name="pageNum" value='<c:out value="${cri.pageNum }"/>'>
@@ -62,9 +66,16 @@
 						<input class="form-control" name='updatedate'
 						value='<fmt:formatDate pattern="yyyy-MM-dd" value="${board.updatedate}"/>' readonly="readonly"/>
 					</div>
-					
-					<button type="submit" data-oper='modify' class="btn btn-default">Modify</button>
-					<button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>
+				
+					<sec:authentication property="principal" var="pinfo"/>
+				
+						<sec:authorize access="isAuthenticated()">
+							<c:if test="${pinfo.username eq board.writer }">
+								<button type="submit" data-oper='modify' class="btn btn-default">Modify</button>
+								<button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>
+							</c:if>
+						</sec:authorize>
+						
 					<button type="submit" data-oper='list' class="btn btn-info">List</button>
 				</form>
 			</div>
