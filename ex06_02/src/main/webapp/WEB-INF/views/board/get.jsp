@@ -97,12 +97,11 @@
 					</li>
 					<!-- end reply -->
 				</ul>
-				<!-- /. end ul -->
+				<!-- /. end chat -->
 			</div>
-			<!-- /.end chat panel-body -->
+			<!-- /.end panel-body -->
 			
 			<div class="panel-footer">
-				
 			</div>
 			<!-- /.end chat panel-footer -->
 			
@@ -111,7 +110,7 @@
 </div>
 <!-- end row -->
 
-<!-- Modal -->
+<!-- Reply Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel" aria-hidden="true">
  	<div class="modal-dialog">
@@ -130,7 +129,7 @@
  				</div>
  				<div class="form-group">
  					<label>Replyer</label>
- 					<input class="form-control" name="replyer" value="replyer">
+ 					<input class="form-control" name="replyer" value="replyer" readonly>
  				</div>
  				<div class="form-group">
  					<label>Reply Date</label>
@@ -180,6 +179,15 @@
 		var modalRemoveBtn = $("#modalRemoveBtn");
 		var modalRegisterBtn = $("#modalRegisterBtn");
 		var modalCloseBtn = $("#modalCloseBtn");
+		
+		var replyer = null;
+		
+		<sec:authorize access="isAuthenticated()">
+			replyer = '<sec:authentication property="principal.username"/>';
+		</sec:authorize>
+		
+		var csrfHeaderName = "${_csrf.headerName}";
+		var csrfTokenValue = "${_csrf.token}";
 		
 		var pageNum = 1;
 		var replyPageFooter = $(".panel-footer");
@@ -265,6 +273,7 @@
 		$("#addReplyBtn").on("click", function(e){
 			
 			modal.find("input").val("");
+			modal.find("input[name='replyer']").val(replyer);
 			modalInputReplyDate.closest("div").hide();
 			modal.find("button[id != 'modalCloseBtn']").hide();
 			
@@ -300,6 +309,11 @@
 			});
 		});
 		
+		//Ajax spring security header
+		$(document).ajaxSend(function(e, xhr, options) {
+			xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+		});
+		
 		// Register button 이벤트 처리
 		// 새 댓글을 등록하면 가장 마지막 페이지(page = -1)를 보여준다.
 		modalRegisterBtn.on("click", function(e){
@@ -324,7 +338,28 @@
 		
 		modalModBtn.on("click", function(e){
 			
-			var reply = {rno:modal.data("rno"), reply:modalInputReply.val()};
+			var originalReplyer = modalInputReplyer.val();
+			
+			console.log("Original Replyer : " + originalReplyer);
+			
+			var reply = {
+					rno : modal.data("rno"), 
+					reply : modalInputReply.val(),
+					replyer : originalReplyer		
+			};
+			
+			// replyer가 없다면, replyer가 null이라면, 로그인을 하지않았다면
+			if(!replyer) {
+				alert("로그인 후 수정이 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
+			
+			if(replyer != originalReplyer) {
+				alert("자신이 작성한 댓글만 수정이 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
 			
 			replyService.update(reply, function(result){
 				alert(result);
@@ -336,8 +371,25 @@
 		modalRemoveBtn.on("click", function(e){
 			
 			var rno = modal.data("rno");
+			var originalReplyer = modalInputReplyer.val();
 			
-			replyService.remove(rno, function(result){
+			console.log("RNO : " + rno);
+			console.log("Replyer : " + replyer);
+			console.log("Original Replyer: " + originalReplyer); // 댓글의 원래 작성자
+			
+			if(!replyer) {
+				alert("로그인 후 삭제가 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
+			
+			if(replyer != originalReplyer) {
+				alert("댓글의 작성자만 글을 지울수 있습니다.");
+				modal.modal("hide");
+				return;
+			}
+			
+			replyService.remove(rno, originalReplyer, function(result){
 				alert(result);
 				modal.modal("hide");
 				showList(pageNum);

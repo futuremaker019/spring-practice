@@ -23,7 +23,7 @@
 		<security:form-login login-page="/customLogin" 
 			authentication-success-handler-ref="customLoginSuccess"/>
 			
-		<security:logout logout-url="/customLogout" invalidate-session="true"
+		<security:logout logout-url="/customLogout" logout-success-url="/board/list" invalidate-session="true"
 			delete-cookies="remember-me,JSESSION_ID"/>
 		<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
 	</security:http>
