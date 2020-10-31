@@ -1,14 +1,29 @@
 package com.demo.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.demo.domain.AttachFileDTO;
+
 import lombok.extern.log4j.Log4j;
+import net.coobird.thumbnailator.Thumbnailator;
 
 @Log4j
 @Controller
@@ -43,26 +58,90 @@ public class UploadController {
 		log.info("upload ajax");
 	}
 	
-	@PostMapping("/uploadAjaxAction")
-	public void uploadAjaxPost(MultipartFile[] uploadFile) {
+	@ResponseBody
+	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_PROBLEM_JSON_UTF8_VALUE)
+	public ResponseEntity<List<AttachFileDTO>> uploadAjaxPost(MultipartFile[] uploadFile) {
 		log.info("upload ajax post........");
 		
+		List<AttachFileDTO> list = new ArrayList<>();
 		String uploadFolder = "C:\\upload";
+		
+		// make folder
+		// file("업로드될 폴더 경로", "폴더의 이름(여기서는 날짜로 구분했다.)"
+		String uploadFolderPath = getFolder();
+		File uploadPath = new File(uploadFolder, uploadFolderPath);
+		log.info("upload path : " + uploadPath);
+		
+		// make yyyy/MM/dd
+		// 업로드 시, 해당 날짜의 폴더가 존재하지 않는다면 생성해라.
+		if (uploadPath.exists() == false) {
+			uploadPath.mkdirs();
+		}
 		
 		for(MultipartFile multipartFile : uploadFile) {
 			log.info("---------------------");
 			log.info("Upload File Name : " + multipartFile.getOriginalFilename());
 			log.info("Upload File size : " + multipartFile.getSize());
 			
+			AttachFileDTO attachDTO = new AttachFileDTO();
+			
 			String uploadFileName = multipartFile.getOriginalFilename();
 			
-			File saveFile = new File(uploadFolder, uploadFileName);
+			// file의 이름을 저장
+			attachDTO.setFileName(uploadFileName);
+			
+			// UUID를 추가하여 중복된 파일을 업로드 시, 기존의 파일이 지워지는 것을 방지해준다.
+			UUID uuid = UUID.randomUUID();
+			uploadFileName = uuid.toString() + "_" + uploadFileName;
+			
+			// File saveFile = new File(uploadFolder, uploadFileName);
+			File saveFile = new File(uploadPath, uploadFileName);
 			
 			try {
 				multipartFile.transferTo(saveFile);
+				
+				// file의 uuid, uploadPath를 지정해준다.
+				attachDTO.setUuid(uuid.toString());
+				attachDTO.setUploadPath(uploadFolderPath);
+				
+				// check image type file
+				if (checkImageType(saveFile)) {
+					
+					// file이 이미지이면 true를 넣게 해준다.
+					attachDTO.setImage(true);
+					
+					FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
+					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnail, 100, 100);
+					thumbnail.close();
+				}
+				
+				//add to List
+				list.add(attachDTO);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
+		}// end for
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+	
+	private String getFolder() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		//java.util.Date
+		Date date = new Date();
+		
+		String str = sdf.format(date);
+		
+		return str.replace("-", File.separator);
+	}
+	
+	private boolean checkImageType(File file) {
+		try {
+			String contentType = Files.probeContentType(file.toPath());
+			return contentType.startsWith("image");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return true;
 	}
 }
