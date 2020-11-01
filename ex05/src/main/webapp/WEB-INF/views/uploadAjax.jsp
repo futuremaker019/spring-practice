@@ -5,6 +5,28 @@
 <head>
 <meta charset="UTF-8">
 <title>Upload with Ajax</title>
+<style type="text/css">
+	.uploadResult {
+		width : 100%;
+		background-color : grey;
+	}
+	
+	.uploadResult ul {
+		display : flex;
+		flex-flow : row;
+		justify-contenct : center;
+		align-items : center;
+	}
+	
+	.uploadResult ul li {
+		list-style : none;
+		padding : 10px;
+	}
+	
+	.uploadResult ul li img {
+		width : 150px;
+	}
+</style>
 </head>
 <body>
 	<h1>Upload with Ajax</h1>
@@ -78,11 +100,22 @@
 				var str = "";
 				
 				$(uploadResultArr).each(function(i, obj){
-					str += "<li>" + obj.fileName + "</li>";
+					
+					if (!obj.image) {
+						str += "<li><img src='/resources/img/document.png'> " + obj.fileName + "</li>";
+					} else {
+						/* str += "<li>" + obj.fileName + "</li>"; */
+						
+						// 브라우저에서 GET 방식으로 첨부파일의 이름을 사용할 때에는 항상 파일 이름에 포함된 공백 문자나 한글 이름 등이 문제가 된다.
+						// encoodeURIComponent()를 이용하여 URI 호출에 적합한 문자열로 인코딩 처리한다.
+						var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
+						str += "<li><img src='/display?fileName=" + fileCallPath + "'></li>";
+					}
 				});
 				
 				uploadResult.append(str);
 			}
+			
 		});
 	})
 </script>
