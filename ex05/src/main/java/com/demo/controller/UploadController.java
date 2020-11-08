@@ -3,6 +3,8 @@ package com.demo.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +85,34 @@ public class UploadController {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@ResponseBody
+	@GetMapping(value="/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<Resource> downloadFile(String fileName){
+		log.info("download file : " + fileName);
+		
+		Resource resource = new FileSystemResource("c:\\upload\\" + fileName);
+		log.info("resource : " + resource);
+		
+		if (resource.exists() == false) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		String resouceName = resource.getFilename();
+		log.info("resourceName : " + resouceName);
+		
+		// remove UUID
+		String resourceOriginalName = resouceName.substring(resouceName.indexOf("_") + 1);
+		HttpHeaders headers = new HttpHeaders();
+		try {
+			// 파일 이름이 한글인 경우 저장할 때 까지 문제를 막기 위해서 문자열 처리를 해준다.
+			String downloadName = new String(resourceOriginalName.getBytes("UTF-8"), "ISO-8859-1");
+			headers.add("Content-Disposition", "attachment; fileName=" + downloadName);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
 	}
 	
 	@ResponseBody
