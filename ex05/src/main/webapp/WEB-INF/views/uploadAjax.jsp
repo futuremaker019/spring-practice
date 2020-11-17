@@ -72,26 +72,6 @@
 	
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <script>
-	function showImage(fileCallPath) {
-<<<<<<< HEAD
-		alert(fileCallPath);
-=======
-		// alert(fileCallPath);
-		$(".bigPictureWrapper").css("display", "flex").show();
-		
-		$(".bigPicture")
-			.html("<img src='/display?fileName=" + encodeURI(fileCallPath) +"'>")
-			.animate({width:'100%', height:'100%'}, 100)
-			
-		$(".bigPictureWrapper").on("click", function(e){
-			$(".bigPicture").animate({width : '0%', height : '0%'}, 1000);
-			setTimeout(function(){
-				$(".bigPictureWrapper").hide();
-			}, 100);
-		});
->>>>>>> 1f45e21b71279fc85e0df3ac70c238a635a68e5c
-	}
-
 	$(document).ready(function(){
 		var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 		var maxSize = 5242880; // 5MB
@@ -144,46 +124,66 @@
 					$(".uploadDiv").html(cloneObj.html());
 				}
 			});
-			
-			function showUploadedFile(uploadResultArr) {
-				var str = "";
-				
-				$(uploadResultArr).each(function(i, obj){
-					if (!obj.image) {
-						var fileCallPath = encodeURIComponent(obj.uploadPath + "/" + obj.uuid + "_" + obj.fileName);
-<<<<<<< HEAD
-						str += "<li><a href='/download?fileName=" + fileCallPath + "'>"
-							+ "<img src='/resources/img/document.png'>" + obj.fileName + "</a></li>";
-					} else {
-						var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
-						var originPath = obj.uploadPath + "\\" + obj.uuid + "_" + obj.fileName;
-						originPath = originPath.replace(new RegExp(/\\/g), "/")
-						
-						str += "<li><a href=\"javascript:showImage(\'" + originPath + "\')\"><img src='/display?fileName'"
-								+ fileCallPath + "'></a><li>";
-=======
-						
-						str += "<li><a href='/download?fileName=" + fileCallPath + "'>" 
-							+ "<img src='/resources/img/document.png'>" + obj.fileName + "</a></li>";
-						
-					} else {
-						// 브라우저에서 GET 방식으로 첨부파일의 이름을 사용할 때에는 항상 파일 이름에 포함된 공백 문자나 한글 이름 등이 문제가 된다.
-						// encoodeURIComponent()를 이용하여 URI 호출에 적합한 문자열로 인코딩 처리한다.
-						var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
-						var originalPath = obj.uploadPath + "\\" + obj.uuid + "_" + obj.fileName;
-						
-						//  결로 구분자(\\)를 "/"로 바꾸는 코드 (정규 표현식을 이용했다.) 
-						originalPath = originalPath.replace(new RegExp(/\\/g), "/");
-						
-						str += "<li><a href=\"javascript:showImage(\'" + originalPath + "\')\"><img src='/display?fileName=" 
-							+ fileCallPath + "'></a><li>";
->>>>>>> 1f45e21b71279fc85e0df3ac70c238a635a68e5c
-					}
-				});
-				uploadResult.append(str);
-			}
 		});
+		
+		function showUploadedFile(uploadResultArr) {
+			var str = "";
+			
+			$(uploadResultArr).each(function(i, obj){
+				if (!obj.image) {
+					var fileCallPath = encodeURIComponent(obj.uploadPath + "/" + obj.uuid + "_" + obj.fileName);
+
+					str += "<li><a href='/download?fileName=" + fileCallPath + "'>"
+						+ "<img src='/resources/img/document.png'>" + obj.fileName + "</a></li>";
+				} else {
+					var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
+					var originPath = obj.uploadPath + "\\" + obj.uuid + "_" + obj.fileName;
+					originPath = originPath.replace(new RegExp(/\\/g), "/")
+					
+					str += "<li><a href=\"javascript:showImage(\'" + originPath + "\')\"><img src='/display?fileName'"
+							+ fileCallPath + "'></a><li>";
+
+					
+					str += "<li><a href='/download?fileName=" + fileCallPath + "'>" 
+						+ "<img src='/resources/img/document.png'>" + obj.fileName + "</a></li>";
+						
+					
+				} else {
+					// 브라우저에서 GET 방식으로 첨부파일의 이름을 사용할 때에는 항상 파일 이름에 포함된 공백 문자나 한글 이름 등이 문제가 된다.
+					// encoodeURIComponent()를 이용하여 URI 호출에 적합한 문자열로 인코딩 처리한다.
+					var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
+					var originalPath = obj.uploadPath + "\\" + obj.uuid + "_" + obj.fileName;
+					
+					//  결로 구분자(\\)를 "/"로 바꾸는 코드 (정규 표현식을 이용했다.) 
+					originalPath = originalPath.replace(new RegExp(/\\/g), "/");
+					
+					str += "<li><a href=\"javascript:showImage(\'" + originalPath + "\')\"><img src='/display?fileName=" 
+						+ fileCallPath + "'></a><li>";
+				}
+			});
+			uploadResult.append(str);
+		}
+		
+		function showImage(fileCallPath) {
+
+			alert(fileCallPath);
+
+			// alert(fileCallPath);
+			$(".bigPictureWrapper").css("display", "flex").show();
+			
+			$(".bigPicture")
+				.html("<img src='/display?fileName=" + encodeURI(fileCallPath) +"'>")
+				.animate({width:'100%', height:'100%'}, 100)
+				
+			$(".bigPictureWrapper").on("click", function(e){
+				$(".bigPicture").animate({width : '0%', height : '0%'}, 1000);
+				setTimeout(function(){
+					$(".bigPictureWrapper").hide();
+				}, 100);
+			});
+		}
 	})
+	// document-ready-end
 </script>
 </body>
 </html>

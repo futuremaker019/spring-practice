@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,20 +34,21 @@ import net.coobird.thumbnailator.Thumbnailator;
 @Log4j
 @Controller
 public class UploadController {
-
+	
+	private final static String uploadFolder = "/usr/local/tomcat/upload";
+	
 	@GetMapping("/uploadForm")
 	public void uploadForm() {
-		log.info("upload form");
+		log.info("upload Form");
 	}
 	
 	@PostMapping("/uploadFormAction")
 	public void uploadFormPost(MultipartFile[] uploadFile, Model model) {
-		String uploadFolder = "C:\\upload";
 		
 		for (MultipartFile multipartFile : uploadFile) {
-			log.info("---------------------");
-			log.info("Upload File Name : " + multipartFile.getOriginalFilename());
-			log.info("Upload File size : " + multipartFile.getSize());
+			log.info("--------------------");
+			log.info("Upload file Name : " + multipartFile.getOriginalFilename());
+			log.info("upload file Size : " + multipartFile.getSize());
 			
 			File saveFile = new File(uploadFolder, multipartFile.getOriginalFilename());
 			
@@ -57,36 +56,32 @@ public class UploadController {
 				multipartFile.transferTo(saveFile);
 			} catch (Exception e) {
 				log.error(e.getMessage());
-			}
-		}
+			} // end catch
+		} //end for
 	}
 	
 	@GetMapping("/uploadAjax")
 	public void uploadAjax() {
-		log.info("upload ajax");
+		log.info("upload Ajax");
 	}
 	
-	@ResponseBody
-	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_PROBLEM_JSON_UTF8_VALUE)
+	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<AttachFileDTO>> uploadAjaxPost(MultipartFile[] uploadFile) {
+		
+		List<AttachFileDTO> list = new ArrayList<AttachFileDTO>();
 		log.info("upload ajax post........");
 		
-		List<AttachFileDTO> list = new ArrayList<>();
-		String uploadFolder = "C:\\upload";
-		
 		// make folder
-		// file("업로드될 폴더 경로", "폴더의 이름(여기서는 날짜로 구분했다.)"
-		String uploadFolderPath = getFolder();
+		String uploadFolderPath = getFolderFormat();
 		File uploadPath = new File(uploadFolder, uploadFolderPath);
 		log.info("upload path : " + uploadPath);
 		
-		// make yyyy/MM/dd
-		// 업로드 시, 해당 날짜의 폴더가 존재하지 않는다면 생성해라.
-		if (uploadPath.exists() == false) {
+		if (!uploadPath.exists()) {
+			// make yyyy/MM/dd folder
 			uploadPath.mkdirs();
 		}
 		
-		for(MultipartFile multipartFile : uploadFile) {
+		for (MultipartFile multipartFile : uploadFile) {
 			log.info("---------------------");
 			log.info("Upload File Name : " + multipartFile.getOriginalFilename());
 			log.info("Upload File size : " + multipartFile.getSize());
@@ -94,103 +89,123 @@ public class UploadController {
 			AttachFileDTO attachDTO = new AttachFileDTO();
 			
 			String uploadFileName = multipartFile.getOriginalFilename();
-			
-			// file의 이름을 저장
+			// 이름 입력
 			attachDTO.setFileName(uploadFileName);
 			
-			// UUID를 추가하여 중복된 파일을 업로드 시, 기존의 파일이 지워지는 것을 방지해준다.
 			UUID uuid = UUID.randomUUID();
 			uploadFileName = uuid.toString() + "_" + uploadFileName;
 			
-			// File saveFile = new File(uploadFolder, uploadFileName);
 			File saveFile = new File(uploadPath, uploadFileName);
 			
 			try {
 				multipartFile.transferTo(saveFile);
 				
-				// file의 uuid, uploadPath를 지정해준다.
 				attachDTO.setUuid(uuid.toString());
 				attachDTO.setUploadPath(uploadFolderPath);
 				
-				// check image type file
 				if (checkImageType(saveFile)) {
-					
-					// file이 이미지이면 true를 넣게 해준다.
 					attachDTO.setImage(true);
 					
-					FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
+					// outputstream의 생성자의 속성으로 filePath가 들어와야 하는구나
+					FileOutputStream thumbnail = 
+							new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
+					// inputstream, outputstream이 들어오고, 섬네일 크기도 지정해야 한다.
 					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnail, 100, 100);
 					thumbnail.close();
-				}
+				} // end if
 				
-				//add to List
 				list.add(attachDTO);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
-		}// end for
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		} // end for loop
+		
+		return new ResponseEntity<List<AttachFileDTO>>(list, HttpStatus.OK);
 	}
 	
-	@GetMapping("/display")
 	@ResponseBody
-	public ResponseEntity<byte[]> getFile(String fileName) {
+	@GetMapping("/display")
+	public ResponseEntity<byte[]> getFile(String fileName){
 		log.info("fileName : " + fileName);
 		
-		File file = new File("c:\\upload\\" + fileName);
+		File file = new File(uploadFolder+ "/" + fileName);
 		
 		log.info("file : " + file);
 		
 		ResponseEntity<byte[]> result = null;
+		
 		try {
 			HttpHeaders header = new HttpHeaders();
 			header.add("Content-Type", Files.probeContentType(file.toPath()));
-			log.info("file.toPath() : " + file.toPath());
 			result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
 		} catch (IOException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
 	@ResponseBody
-	@GetMapping(value="/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@GetMapping(value = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<Resource> downloadFile(String fileName) {
 		log.info("download file : " + fileName);
 		
-		Resource resource = new FileSystemResource("c:\\upload\\" + fileName);
+		Resource resource = new FileSystemResource(uploadFolder + "/" + fileName);
 		
-		if (resource.exists() == false) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		log.info("resource : " + resource);
 		
 		String resourceName = resource.getFilename();
 		
-		// remove UUID
+		//remove UUID
 		String resourceOriginalName = resourceName.substring(resourceName.indexOf("_") + 1);
 		
 		HttpHeaders headers = new HttpHeaders();
+		
 		try {
-			String downloadName = new String(resourceOriginalName.getBytes("UTF-8"), "ISO-8859-1");
-			log.info("downloadName : " + downloadName);
-			
-			headers.add("Content-Disposition", "attachment; filename=" + downloadName);
+			headers.add("Content-Disposition", 
+					"attachment; fileName=" + new String(resourceOriginalName.getBytes("UTF-8"), "ISO-8859-1"));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		
 		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
 	}
 	
-	private String getFolder() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	@ResponseBody
+	@PostMapping("/deleteFile")
+	public ResponseEntity<String> deleteFile(String fileName, String type) {
+		log.info("deteteFile : " + fileName);
 		
-		//java.util.Date
+		File file;
+		
+		try {
+			file = new File(uploadFolder + "/" + URLDecoder.decode(fileName, "UTF-8"));
+			file.delete();
+			
+			if (type.equals("image")) {
+				String largeFileName = file.getAbsolutePath().replace("s_", "");
+				log.info("orininal file Name: " + largeFileName);
+				
+				// 원본 이미지를 찾아서 지워준다.
+				file = new File(largeFileName);
+				file.delete();
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<String>("deleted", HttpStatus.OK);
+	}
+	
+	// 날짜로 파일 경로를 만드는 메서드
+	private String getFolderFormat() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		String str = sdf.format(date);
 		return str.replace("-", File.separator);
 	}
 	
+	// 이미지 타입을 검사하는 메서드
 	private boolean checkImageType(File file) {
 		try {
 			String contentType = Files.probeContentType(file.toPath());
@@ -198,6 +213,6 @@ public class UploadController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return false;
 	}
 }
