@@ -117,7 +117,7 @@ $(document).ready(function(){
 	var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 	var maxSize = 5242880; //5MB
 	
-	var formObj = $("form[role='form']");
+	var formObject = $("form[role='form']");
 	
 	$("button[type='submit']").on("click", function(e){
 		e.preventDefault();
@@ -127,8 +127,14 @@ $(document).ready(function(){
 		
 		$(".uploadResult ul li").each(function(index, object){
 			var jobject = $(object);
-			console.dir
+			console.dir(jobject);
+			
+			str += "<input type='hidden' name='attachList["+ index +"].fileName' value='" + jobject.data("filename") + "'>";
+			str += "<input type='hidden' name='attachList["+ index +"].uuid' value='" + jobject.data("uuid") + "'>";
+			str += "<input type='hidden' name='attachList["+ index +"].uploadPath' value='" + jobject.data("path") + "'>";
+			str += "<input type='hidden' name='attachList["+ index +"].fileType' value='" + jobject.data("type") + "'>";
 		});
+		formObject.append(str).submit();
 	});
 	
 	// change() 메서드는 해당 input에 값의 변경이 있을때 이벤트를 발생시킨다.  	
@@ -158,12 +164,14 @@ $(document).ready(function(){
 		}); // end ajax
 	}); 
 	
+	// button 태크에 담긴 data 정보를 읽어온 후, 이벤트를 처리한다.
 	$(".uploadResult").on("click", "button", function(e){
 		console.log("delete button clicked");
 		
 		var targetFile = $(this).data("file");
 		var type = $(this).data("type");
 		
+		// li 태그를 찾고 remove로 지워준다.
 		var targetLi = $(this).closest("li");
 		
 		$.ajax({
@@ -216,7 +224,7 @@ $(document).ready(function(){
 					= encodeURIComponent(object.uploadPath + "/" + object.uuid + "_" + object.fileName);
 				var fileLink = fileCallPath.replace(new ReqExp(/\\/g), "/");
 				
-				str += "<li data-path='" + object.uploadPath + "' data-uuid='" + object.uuid + "'
+				str += "<li data-path='" + object.uploadPath + "' data-uuid='" + object.uuid + "'"
 					+ " data-filename='" + object.filename + "' date-type='" + object.image + "'>";
 				ste += "<div>"
 				str += "<span>" + object.fileName + "</span>";

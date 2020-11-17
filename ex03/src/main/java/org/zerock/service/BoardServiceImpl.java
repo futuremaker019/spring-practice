@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
+import org.zerock.mapper.BoardAttachMapper;
 import org.zerock.mapper.BoardMapper;
 
 import lombok.AllArgsConstructor;
@@ -17,44 +18,56 @@ import lombok.extern.log4j.Log4j;
 @AllArgsConstructor
 public class BoardServiceImpl implements BoardService{
 	
-	@Setter(onMethod_ = @Autowired)
-	private BoardMapper mapper;
+	@Autowired
+	private BoardMapper boardMapper;
+	
+	@Autowired
+	private BoardAttachMapper boardAttachMapper; 
 
 	@Override
 	public void register(BoardVO boardVO) {
 		log.info("register...." + boardVO);
 		
-		mapper.insertSelectKey(boardVO);
+		boardMapper.insertSelectKey(boardVO);
+		
+		if (boardVO.getAttachList() == null || boardVO.getAttachList().size() <= 0) {
+			return;
+		}
+		
+		boardVO.getAttachList().forEach(attach -> {
+			attach.setBno(boardVO.getBno());
+			boardAttachMapper.insert(attach);
+		});
 	}
 
 	@Override
 	public BoardVO get(Long bno) {
 		log.info("get......" + bno);
-		return mapper.read(bno);
+		return boardMapper.read(bno);
 	}
 
 	@Override
 	public boolean modify(BoardVO boardVO) {
 		log.info("modify...." + boardVO);
-		return mapper.update(boardVO) == 1;
+		return boardMapper.update(boardVO) == 1;
 	}
 
 	@Override
 	public boolean remove(Long bno) {
 		log.info("delete...." + bno);
-		return mapper.delete(bno) == 1;
+		return boardMapper.delete(bno) == 1;
 	}
 
 	@Override
 	public List<BoardVO> getList(Criteria cri) {
 		log.info("get List with criteria : " + cri);
-		return mapper.getListWithPaging(cri);
+		return boardMapper.getListWithPaging(cri);
 	}
 
 	@Override
 	public int getTotal(Criteria cri) {
 		log.info("get total count");
-		return mapper.getTotalCount(cri);
+		return boardMapper.getTotalCount(cri);
 	}
 
 	/*

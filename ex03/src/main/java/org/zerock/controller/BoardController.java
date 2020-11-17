@@ -41,11 +41,19 @@ public class BoardController {
 	@PostMapping("/register")
 	public String register(BoardVO boardVO, RedirectAttributes rttr) {
 		
+		log.info("==========================");
+		
 		log.info("register : " + boardVO);
+		
+		if (boardVO.getAttachList() != null) {
+			boardVO.getAttachList().forEach(attach -> log.info(attach));
+		}
+		
+		log.info("==========================");
 		
 		service.register(boardVO);
 		
-		// redirect시, 추가적으로 데이터를 전달하기 위해 사용한다.
+		//redirect시, 추가적으로 데이터를 전달하기 위해 사용한다.
 		rttr.addFlashAttribute("result", boardVO.getBno());
 		
 		return "redirect:/board/list";
