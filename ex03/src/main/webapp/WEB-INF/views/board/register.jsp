@@ -122,6 +122,13 @@ $(document).ready(function(){
 	$("button[type='submit']").on("click", function(e){
 		e.preventDefault();
 		console.log("submit clicked");
+		
+		var str = "";
+		
+		$(".uploadResult ul li").each(function(index, object){
+			var jobject = $(object);
+			console.dir
+		});
 	});
 	
 	// change() 메서드는 해당 input에 값의 변경이 있을때 이벤트를 발생시킨다.  	
@@ -194,7 +201,10 @@ $(document).ready(function(){
 			if (object.image) {
 				var fileCallPath 
 					= encodeURIComponent(object.uploadPath + "/s_" + object.uuid + "_" + object.fileName);
-				str += "<li><div>";
+				str += "<li data-path='" + object.uploadPath + "'"
+					+ " data-uuid='" + object.uuid + "' data-filename='" + object.fileName + "'"
+					+ " data-type='" + object.image + "'>";
+				str += "<div>";
 				str += "<span>"+ object.fileName + "</span>";
 				str += "<button type='button' class='btn btn-warning btn-circle' "
 					+ "data-file=\'" + fileCallPath + "\' data-type='image'>";
@@ -206,7 +216,9 @@ $(document).ready(function(){
 					= encodeURIComponent(object.uploadPath + "/" + object.uuid + "_" + object.fileName);
 				var fileLink = fileCallPath.replace(new ReqExp(/\\/g), "/");
 				
-				str += "<li><div>"
+				str += "<li data-path='" + object.uploadPath + "' data-uuid='" + object.uuid + "'
+					+ " data-filename='" + object.filename + "' date-type='" + object.image + "'>";
+				ste += "<div>"
 				str += "<span>" + object.fileName + "</span>";
 				str += "<button type='button' class='btn btn-warning btn-circle'"
 					+ "data-file=\'" + fileCallPath + "\' data-type='file'>";
