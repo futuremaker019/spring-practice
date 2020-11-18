@@ -74,7 +74,7 @@ public class UploadController {
 		// 날짜를 디렉토리로 구분해여 path를 만들어준다.
 		String uploadFolderPath = getFolderFormat();
 		File uploadPath = new File(uploadFolder, uploadFolderPath);
-		log.info("upload path : " + uploadPath);
+		log.info("upload path in uploadAjaxAction: " + uploadPath);
 		
 		// 날짜로 들어오는 디렉토리가 없으면 만들어준다.
 		if (!uploadPath.exists()) {
@@ -84,8 +84,8 @@ public class UploadController {
 		
 		for (MultipartFile multipartFile : uploadFile) {
 			log.info("---------------------");
-			log.info("Upload File Name : " + multipartFile.getOriginalFilename());
-			log.info("Upload File size : " + multipartFile.getSize());
+			log.info("Upload File Name in uploadAjaxAction : " + multipartFile.getOriginalFilename());
+			log.info("Upload File size in uploadAjaxAction : " + multipartFile.getSize());
 			
 			AttachFileDTO attachDTO = new AttachFileDTO();
 			
@@ -131,11 +131,11 @@ public class UploadController {
 	@ResponseBody
 	@GetMapping("/display")
 	public ResponseEntity<byte[]> getFile(String fileName){
-		log.info("fileName : " + fileName);
+		log.info("fileName in display: " + fileName);
 		
 		File file = new File(uploadFolder+ "\\" + fileName);
 		
-		log.info("file : " + file);
+		log.info("file in display : " + file);
 		
 		ResponseEntity<byte[]> result = null;
 		

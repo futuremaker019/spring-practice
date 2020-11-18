@@ -80,6 +80,7 @@
 					</div>
 					<button type="submit" class="btn btn-default">Submit Button</button>
 					<button type="reset" class="btn btn-default">Reset Button</button>
+					<a href="/board/list" >리스트로 돌아가기</a>
 				</form>
 			</div>
 			<!-- end panel body -->
@@ -126,6 +127,8 @@ $(document).ready(function(){
 		var str = "";
 		
 		$(".uploadResult ul li").each(function(index, object){
+			console.log("object : " + object);
+			
 			var jobject = $(object);
 			console.dir(jobject);
 			
@@ -141,15 +144,24 @@ $(document).ready(function(){
 	$("input[type='file']").change(function(e) {
 		var formData = new FormData();
 		var inputFile = $("input[name='uploadFile']");
+		
+		// files 가 배열의 형태로 들어온다.
+		// 중요한것은 name, size, type
 		var files = inputFile[0].files;
+		console.log("files 호출이 아래에 뜰거야")
+		console.log(files);
 		
 		for (var i = 0; i < files.length; i++){
 			if (!checkExtension(files[i].name, files[i].size)) {
 				return false;
 			}
+			// formData.append(key, value) 형태의 값이 들어와야 한다.
+			// 파일 업로드 input 태크의 name은 key자리에, 사진의 데이터는 value 자리에 넣어준다. 
 			formData.append("uploadFile", files[i]);
 		} // validation, 업로드 파일을 
 		
+		// 받아준 form을 서버에 전송한다.
+		// 전송된 데이터는 showUploadResult 메서드에서 호출하여 화면에 보여준다.
 		$.ajax({
 			url : '/uploadAjaxAction',
 			processData : false,
@@ -164,7 +176,7 @@ $(document).ready(function(){
 		}); // end ajax
 	}); 
 	
-	// button 태크에 담긴 data 정보를 읽어온 후, 이벤트를 처리한다.
+	// 삭제 버튼 이벤트 - 첨부파일 삭제 버튼 클릭시, 태크에 담긴 data 정보를 읽어온 후 이벤트를 처리한다.
 	$(".uploadResult").on("click", "button", function(e){
 		console.log("delete button clicked");
 		
@@ -199,6 +211,8 @@ $(document).ready(function(){
 		return true;
 	} // file extension & size validation
 	
+	
+	// 서버에서 보내준 BoardAttachVO의 객체를 받아서 화면에 띄어주는 작업이다.
 	function showUploadResult(uploadResultArr) {
 		if (!uploadResultArr || uploadResultArr == 0) { return; }
 		
@@ -209,6 +223,8 @@ $(document).ready(function(){
 			if (object.image) {
 				var fileCallPath 
 					= encodeURIComponent(object.uploadPath + "/s_" + object.uuid + "_" + object.fileName);
+				var fileLink = fileCallPath.replace(new RegExp(/\\/g), "/");
+				
 				str += "<li data-path='" + object.uploadPath + "'"
 					+ " data-uuid='" + object.uuid + "' data-filename='" + object.fileName + "'"
 					+ " data-type='" + object.image + "'>";
@@ -222,7 +238,7 @@ $(document).ready(function(){
 			} else {
 				var fileCallPath
 					= encodeURIComponent(object.uploadPath + "/" + object.uuid + "_" + object.fileName);
-				var fileLink = fileCallPath.replace(new ReqExp(/\\/g), "/");
+				var fileLink = fileCallPath.replace(new RegExp(/\\/g), "/");
 				
 				str += "<li data-path='" + object.uploadPath + "' data-uuid='" + object.uuid + "'"
 					+ " data-filename='" + object.filename + "' date-type='" + object.image + "'>";

@@ -6,6 +6,58 @@
     
 <%@include file="../includes/header.jsp" %>
 
+<div class="bigPictureWrapper">
+	<div class="bigPicture">
+	</div>
+</div>
+
+<style type="text/css">
+	.uploadResult {
+		width : 100%;
+		background-color : grey;
+	}
+	
+	.uploadResult ul {
+		display : flex;
+		flex-flow : row;
+		justify-contenct : center;
+		align-items : center;
+	}
+	
+	.uploadResult ul li {
+		list-style : none;
+		padding : 10px;
+	}
+	
+	.uploadResult ul li img {
+		width : 150px;
+	}
+	
+	.bigPictureWrapper {
+		position : absolute;
+		display : none;
+		justify-content : center;
+		align-items : center;
+		top : 0%;
+		width : 100%;
+		height : 100%;
+		background-color : gray;
+		z-index: 100;
+		background : rgba(255, 255, 255, 0.5);
+	}
+	
+	.bigPicture{
+		position : relative;
+		display : flex;
+		justify-content : center;
+		align-items : center;
+	}
+	
+	.bigPicture img {
+		width : 600px;
+	}
+</style>
+
 <div class="row">
 	<div class="col-lg-12">
 		<h1 class="page-header">Board Register</h1>
@@ -97,6 +149,23 @@
 </div>
 <!-- end row -->
 
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">Files</div>
+			<div class="panel-body">
+				<div class='uploadResult'>
+					<ul>
+					</ul>
+				</div>
+			</div>
+			<!-- end panel-body -->
+		</div>
+		<!-- end panel -->
+	</div>
+</div>
+<!-- end row -->
+
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel" aria-hidden="true">
@@ -138,16 +207,7 @@
  </div>
  <!-- /.modal -->
 
-<!-- <li class='left clearfix' data-rno='"+list[i].rno"'>
-	<div><div class='header'><strong class='primary-font'>"+list[i].replyer+"</strong>
-			<small class='pull-right text-muted'>"+list[i].replyDate+"</small></div>
-		<p>"+list[i].reply+"</p></div></li> -->
-		
-<!-- <div><ul class='pagination pull-right'>
-	<li class='page-item'><a class='page-link' href='"+ (startNum - 1) +"'>Previous</a></li>
-	<li class='page-item " + active + "'><a class='page-link' href='"+ i +"'></a></li>
-	<li class='page-item'><a class='page-link' href='"+ (endPage + 1) +"'>Next</a></li>
-</ul></div> -->
+
 
 <script type="text/javascript" src="/resources/js/reply.js"></script>
 
@@ -363,6 +423,69 @@
 			operForm.attr("action", "/board/list");
 			operForm.submit();
 		});
+	});
+</script>
+
+<script>
+	$(document).ready(function(){
+		(function(){
+			var bno = '<c:out value="${board.bno}"/>';
+			
+			$.getJSON("/board/getAttachList", {bno : bno}, function(arr){
+				console.log(arr);
+				
+				var str = "";
+				
+				$(arr).each(function(i, attach){
+					if (attach.fileType) {
+						var fileCallPath 
+							= encodeURIComponent(attach.uploadPath + "/s_" + attach.uuid + "_" + attach.fileName);
+						
+						str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"'"
+							+ " data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"'>";
+						str += "<div><img src='/display?fileName="+fileCallPath+"'></div></li>";
+					} else {
+						str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"'"
+							+ " data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"'>";
+						str += "<div><span>"+attach.fileName+"</span><br/>";
+						str += "<img src='/resources/document.png'>";
+						str += "</div></li>";
+					}
+				});
+				$(".uploadResult ul").html(str);
+			}); // end getjson
+		})();
+		
+		$(".uploadResult").on("click", "li", function(e){
+			console.log("clicked");
+			
+			var liObj = $(this);
+			var filePath = liObj.data("path")+"/"+liObj.data("uuid")+"_"+liObj.data("filename");
+			console.log("filePath before encoding : " + filePath);
+			
+			/* var path = encodeURIComponent(filePath); */
+			
+			if (liObj.data("type")) {
+				showImage(filePath.replace(new RegExp(/\\/g), "/"));
+			} else {
+				// download
+				self.location = "/download?fileName=" + path
+			}
+		});
+		
+		function showImage(fileCallPath) {
+			/* alert(fileCallPath); */
+			
+			$(".bigPictureWrapper").css("display", "flex").show();
+			
+			$(".bigPicture")
+				.html("<img src='/display?fileName=" + encodeURI(fileCallPath) +"'>")
+				.show();
+				
+			$(".bigPictureWrapper").on("click", function(e){
+				$(".bigPictureWrapper").hide();
+			});
+		}
 	});
 </script>
 
