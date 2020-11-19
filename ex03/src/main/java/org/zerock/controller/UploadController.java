@@ -164,7 +164,7 @@ public class UploadController {
 							new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
 					// inputstream, outputstream이 들어오고, 섬네일 크기도 지정해야 한다.
 					// 섬네일을 만들어준다.
-					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnailOutputStream, 100, 100);
+					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnailOutputStream, 50, 50);
 					thumbnailOutputStream.close();
 				} // end if
 				
