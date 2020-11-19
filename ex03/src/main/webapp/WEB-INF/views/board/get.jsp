@@ -474,8 +474,6 @@
 		});
 		
 		function showImage(fileCallPath) {
-			/* alert(fileCallPath); */
-			
 			$(".bigPictureWrapper").css("display", "flex").show();
 			
 			$(".bigPicture")

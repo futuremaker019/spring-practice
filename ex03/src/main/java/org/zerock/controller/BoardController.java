@@ -1,5 +1,8 @@
 package org.zerock.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +26,21 @@ import org.zerock.service.BoardService;
 
 import lombok.extern.log4j.Log4j;
 
-@Controller
 @Log4j
+@Controller
 @RequestMapping("/board/*")
 public class BoardController {
 	
 	@Autowired
-	private BoardService service;
+	private BoardService boardService;
 	
 	@GetMapping("/list")
 	public void list(Criteria cri, Model model) {
 		log.info("list : " + cri);
-		model.addAttribute("list", service.getList(cri));
+		model.addAttribute("list", boardService.getList(cri));
 		// model.addAttribute("pageMaker", new PageDTO(cri, 123));
 		
-		int total = service.getTotal(cri);
+		int total = boardService.getTotal(cri);
 		
 		log.info("total : " + total);
 		
@@ -51,7 +54,7 @@ public class BoardController {
 		
 		log.info("/get or modify");
 		
-		model.addAttribute("board", service.get(bno));
+		model.addAttribute("board", boardService.get(bno));
 	}
 	
 	@GetMapping("/register")
@@ -62,7 +65,7 @@ public class BoardController {
 	@ResponseBody
 	@GetMapping(value="/getAttachList", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<BoardAttachVO>> getAttachList(Long bno) {
-		return new ResponseEntity<>(service.getAttachList(bno), HttpStatus.OK);
+		return new ResponseEntity<>(boardService.getAttachList(bno), HttpStatus.OK);
 	}
 	
 	@PostMapping("/register")
@@ -78,7 +81,7 @@ public class BoardController {
 		
 		log.info("==========================");
 		
-		service.register(boardVO);
+		boardService.register(boardVO);
 		
 		//redirect시, 추가적으로 데이터를 전달하기 위해 사용한다.
 		rttr.addFlashAttribute("result", boardVO.getBno());
@@ -93,7 +96,7 @@ public class BoardController {
 		
 		log.info("modify: " + boardVO);
 		
-		if (service.modify(boardVO)) {
+		if (boardService.modify(boardVO)) {
 			rttr.addFlashAttribute("result", "success");
 		}
 		
@@ -114,7 +117,10 @@ public class BoardController {
 		
 		log.info("remove...." + bno);
 		
-		if (service.remove(bno)) {
+		List<BoardAttachVO> attachList = boardService.getAttachList(bno);
+		
+		if (boardService.remove(bno)) {
+			deleteFiles(attachList);
 			rttr.addFlashAttribute("result", "success");
 		}
 		
@@ -127,4 +133,30 @@ public class BoardController {
 		
 		return "redirect:/board/list" + cri.getListLink();
 	}
+	
+	// 게시판이 submit으로 올라간후, 파일을 지울때 사용하는 메서드
+	private void deleteFiles(List<BoardAttachVO> attachList) {
+		if (attachList == null || attachList.size() == 0) {
+			return;
+		}
+		
+		log.info("delete attach files......");
+		log.info(attachList);
+		
+		attachList.forEach(attach -> {
+			try {
+				Path filePath = 
+						Paths.get("C:\\upload\\" + attach.getUploadPath() + "\\" + attach.getUuid() + "_" + attach.getFileName());
+				Files.deleteIfExists(filePath);
+				
+				if (Files.probeContentType(filePath).startsWith("image")) {
+					Path thumbnail = 
+							Paths.get("C:\\upload\\" + attach.getUploadPath() + "\\s_" + attach.getUuid() + "_" + attach.getFileName());
+					Files.delete(thumbnail);
+				}
+			} catch (Exception e) {
+				log.error("delete file error : " + e.getMessage());
+			}
+		}); // end foreach
+	} // end deleteFiles
 }
