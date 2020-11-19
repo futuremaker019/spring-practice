@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.zerock.domain.AttachFileDTO;
+import org.zerock.domain.BoardAttachVO;
 
 import lombok.extern.log4j.Log4j;
 import net.coobird.thumbnailator.Thumbnailator;
@@ -63,6 +64,55 @@ public class UploadController {
 	@GetMapping("/uploadAjax")
 	public void uploadAjax() {
 		log.info("upload Ajax");
+	}
+	
+	
+	
+	@ResponseBody
+	@GetMapping("/display")
+	public ResponseEntity<byte[]> getFile(String fileName){
+		log.info("fileName in display: " + fileName);
+		
+		File file = new File(uploadFolder+ "\\" + fileName);
+		
+		log.info("file in display : " + file);
+		
+		ResponseEntity<byte[]> result = null;
+		
+		try {
+			HttpHeaders header = new HttpHeaders();
+			header.add("Content-Type", Files.probeContentType(file.toPath()));
+			result = new ResponseEntity<byte[]>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@ResponseBody
+	@GetMapping(value = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<Resource> downloadFile(String fileName) {
+		log.info("download file : " + fileName);
+		
+		Resource resource = new FileSystemResource(uploadFolder + "\\" + fileName);
+		
+		log.info("resource : " + resource);
+		
+		String resourceName = resource.getFilename();
+		
+		//remove UUID
+		String resourceOriginalName = resourceName.substring(resourceName.indexOf("_") + 1);
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		try {
+			headers.add("Content-Disposition", 
+					"attachment; fileName=" + new String(resourceOriginalName.getBytes("UTF-8"), "ISO-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -110,12 +160,12 @@ public class UploadController {
 					attachDTO.setImage(true);
 					
 					// outputstream의 생성자의 속성으로 filePath가 들어와야 하는구나
-					FileOutputStream thumbnail = 
+					FileOutputStream thumbnailOutputStream = 
 							new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
 					// inputstream, outputstream이 들어오고, 섬네일 크기도 지정해야 한다.
 					// 섬네일을 만들어준다.
-					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnail, 100, 100);
-					thumbnail.close();
+					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnailOutputStream, 100, 100);
+					thumbnailOutputStream.close();
 				} // end if
 				
 				// 
@@ -126,53 +176,6 @@ public class UploadController {
 		} // end for loop
 		
 		return new ResponseEntity<List<AttachFileDTO>>(list, HttpStatus.OK);
-	}
-	
-	@ResponseBody
-	@GetMapping("/display")
-	public ResponseEntity<byte[]> getFile(String fileName){
-		log.info("fileName in display: " + fileName);
-		
-		File file = new File(uploadFolder+ "\\" + fileName);
-		
-		log.info("file in display : " + file);
-		
-		ResponseEntity<byte[]> result = null;
-		
-		try {
-			HttpHeaders header = new HttpHeaders();
-			header.add("Content-Type", Files.probeContentType(file.toPath()));
-			result = new ResponseEntity<byte[]>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	@ResponseBody
-	@GetMapping(value = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<Resource> downloadFile(String fileName) {
-		log.info("download file : " + fileName);
-		
-		Resource resource = new FileSystemResource(uploadFolder + "\\" + fileName);
-		
-		log.info("resource : " + resource);
-		
-		String resourceName = resource.getFilename();
-		
-		//remove UUID
-		String resourceOriginalName = resourceName.substring(resourceName.indexOf("_") + 1);
-		
-		HttpHeaders headers = new HttpHeaders();
-		
-		try {
-			headers.add("Content-Disposition", 
-					"attachment; fileName=" + new String(resourceOriginalName.getBytes("UTF-8"), "ISO-8859-1"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
 	}
 	
 	@ResponseBody

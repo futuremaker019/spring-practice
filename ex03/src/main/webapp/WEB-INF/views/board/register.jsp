@@ -98,6 +98,7 @@
 			<!-- end panel-heading -->
 			<div class="panel-body">
 				<div class="form-group uploadDiv">
+					<label>3개의 사진파일 업로드 가능</label>
 					<input type="file" name="uploadFile" multiple>
 				</div>
 				
@@ -120,6 +121,7 @@ $(document).ready(function(){
 	
 	var formObject = $("form[role='form']");
 	
+	// submit 버튼 이벤트, 
 	$("button[type='submit']").on("click", function(e){
 		e.preventDefault();
 		console.log("submit clicked");
@@ -144,6 +146,7 @@ $(document).ready(function(){
 	$("input[type='file']").change(function(e) {
 		var formData = new FormData();
 		var inputFile = $("input[name='uploadFile']");
+		var maxFileAmount = 3;
 		
 		// files 가 배열의 형태로 들어온다.
 		// 중요한것은 name, size, type
@@ -153,6 +156,11 @@ $(document).ready(function(){
 		
 		for (var i = 0; i < files.length; i++){
 			if (!checkExtension(files[i].name, files[i].size)) {
+				return false;
+			}
+			
+			if (files.length >= maxFileAmount){
+				alert("3개의 파일을 업로드 할 수 없습니다.");
 				return false;
 			}
 			// formData.append(key, value) 형태의 값이 들어와야 한다.
@@ -212,6 +220,7 @@ $(document).ready(function(){
 	} // file extension & size validation
 	
 	
+	// 첨부파일 선택 시, register 페이지에서 업로드될 사진을 보여준다.
 	// 서버에서 보내준 BoardAttachVO의 객체를 받아서 화면에 띄어주는 작업이다.
 	function showUploadResult(uploadResultArr) {
 		if (!uploadResultArr || uploadResultArr == 0) { return; }

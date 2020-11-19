@@ -112,6 +112,23 @@
 
 <div class="row">
 	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">Files</div>
+			<div class="panel-body">
+				<div class='uploadResult'>
+					<ul>
+					</ul>
+				</div>
+			</div>
+			<!-- end panel-body -->
+		</div>
+		<!-- end panel -->
+	</div>
+</div>
+<!-- end row -->
+
+<div class="row">
+	<div class="col-lg-12">
 		<!-- /.panel -->
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -145,23 +162,6 @@
 			<!-- /.end chat panel-footer -->
 			
 		</div>
-	</div>
-</div>
-<!-- end row -->
-
-<div class="row">
-	<div class="col-lg-12">
-		<div class="panel panel-default">
-			<div class="panel-heading">Files</div>
-			<div class="panel-body">
-				<div class='uploadResult'>
-					<ul>
-					</ul>
-				</div>
-			</div>
-			<!-- end panel-body -->
-		</div>
-		<!-- end panel -->
 	</div>
 </div>
 <!-- end row -->
