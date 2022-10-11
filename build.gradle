@@ -36,7 +36,7 @@ subprojects {
     }
 
     dependencies {
-//        developmentOnly("$boot:spring-boot-devtools")
+        developmentOnly("$boot:spring-boot-devtools")
         implementation "$boot:spring-boot-starter-security"
         implementation 'com.fasterxml.jackson.core:jackson-annotations'
 
@@ -70,7 +70,8 @@ subprojects {
     subProjectDir.eachDir {dir->
         def projectName = ":${it}-${dir.name}"
         project(projectName){
-
+            bootJar.enabled(false)
+            jar.enabled(true)
         }
     }
 }

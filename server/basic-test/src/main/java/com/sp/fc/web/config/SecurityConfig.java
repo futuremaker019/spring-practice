@@ -27,10 +27,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http.antMatcher("/api/**"); // /api 주소에 대한 필터 동작을 한다.
         http.authorizeRequests((request) ->
                 request.antMatchers("/").permitAll()
                         .anyRequest().authenticated()
