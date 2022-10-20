@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -40,9 +37,53 @@ public class BasicItemController {
         return "basic/addForm";
     }
 
+    //@PostMapping("/add")
+    public String save(@RequestParam String itemName,
+                       @RequestParam int price,
+                       @RequestParam Integer quantity,
+                       Model model) {
+        Item item = new Item();
+        item.setItemName(itemName);
+        item.setPrice(price);
+        item.setQuantity(quantity);
+
+        itemRepository.save(item);
+
+        model.addAttribute("item", item);
+
+        return "basic/item";
+    }
+
+    /**
+     * @ModelAttribute의 소괄호 안에 들어가는 ("item")의 값으로 Item 객체에 form에서 들어오는 모든 값을 set해주면
+     * Model 객체도 생성하여 화면단에 전송하여 화면의 item.id, item.itemName과 같은 속성에 값이 들어가게 된다.
+     * @param item
+     * @param model
+     * @return
+     */
+    //@PostMapping("/add")
+    public String addItemV2(@ModelAttribute("item") Item item, Model model) {
+        itemRepository.save(item);
+//        model.addAttribute("item", item);
+        return "basic/item";
+    }
+
+    /**
+     * @ModelAttribute의 name(value) 형태를 생략하면 클래스의 lowercase형태로 model에 들어간다.
+     * Item -> item
+     */
+    //@PostMapping("/add")
+    public String addItemV3(@ModelAttribute Item item, Model model) {
+        itemRepository.save(item);
+//        model.addAttribute("item", item);
+        return "basic/item";
+    }
+
     @PostMapping("/add")
-    public String save() {
-        return "/";
+    public String addItemV4(Item item) {
+        itemRepository.save(item);
+//        model.addAttribute("item", item);
+        return "basic/item";
     }
 
     /**
