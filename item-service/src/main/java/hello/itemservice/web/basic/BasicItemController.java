@@ -79,11 +79,21 @@ public class BasicItemController {
         return "basic/item";
     }
 
-    @PostMapping("/add")
+    //@PostMapping("/add")
     public String addItemV4(Item item) {
         itemRepository.save(item);
 //        model.addAttribute("item", item);
         return "basic/item";
+    }
+
+    @PostMapping("/add")
+    public String addItemV5(Item item) {
+        itemRepository.save(item);
+//        model.addAttribute("item", item);
+
+        System.out.println("item.getId() = " + item.getId());
+        // save에서 item.setId(++sequence)를 해주기떄문에 id가 증가한다.
+        return "redirect:/basic/items/" + item.getId();
     }
 
     @GetMapping("/{itemId}/edit")
