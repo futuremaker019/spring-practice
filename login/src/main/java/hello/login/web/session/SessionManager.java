@@ -32,6 +32,7 @@ public class SessionManager {
         sessionStore.put(sessionId, value);
 
         // 쿠키 생성 (key, value 형태로 저장)
+        // 회원 정보와 세션 정보를 쿠키로 생성한다.
         Cookie mySessionCookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
         response.addCookie(mySessionCookie);
     }
