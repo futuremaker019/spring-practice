@@ -22,7 +22,6 @@ public class LoginService {
 //            return null;
 //        }
 
-
         return memberRepository.findByLoginId(loginId)
                 .filter(member -> member.getPassword().equals(password))
                 .orElse(null);
