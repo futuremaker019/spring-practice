@@ -17,12 +17,12 @@ import java.util.Collection;
 @RequestMapping("/servlet/v1")
 public class ServletUploadControllerV1 {
 
-    @GetMapping("/upload")
+    //@GetMapping("/upload")
     public String newFile() {
         return "upload-form";
     }
 
-    @PostMapping("/upload")
+    //@PostMapping("/upload")
     public String saveFileV1(HttpServletRequest request) throws ServletException, IOException {
         log.info("request={}", request);
 
