@@ -7,7 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 // 에러페이지에 대한 자바 설정
-@Component
+
+// BasicErrorController를 사용하면 template에 error 디렉토리에
+// 해당하는 에러페이지만 만들어주면 된다.
+
+//@Component
 public class WebServerCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
     @Override
     public void customize(ConfigurableWebServerFactory factory) {
