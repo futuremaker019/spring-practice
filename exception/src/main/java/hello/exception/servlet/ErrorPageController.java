@@ -1,11 +1,17 @@
 package hello.exception.servlet;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -33,6 +39,32 @@ public class ErrorPageController {
         return "error-page/500";
     }
 
+    /**
+     * request의 header에서 Accept가 applicaion/json 형태이면
+     * produces의 MediaType의 Application이 JSON이면 우선순위를 가져 호출된다.
+     * - Accept 클라이언트가 받을수 있는 데이터 타입이 무엇인지 지정하는것
+     * - Header에 Accept를 지우면 html형식의 error페이지가 호출됨
+     */
+    @RequestMapping(value = "/error-page/500", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> errorPage500Api(
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API errorPage 500");
+
+        Map<String, Object> result = new HashMap<>();
+
+        // exception 받아옴
+        Exception ex = (Exception) request.getAttribute(ERROR_EXCEPTION);
+        // status code  받아옴
+        result.put("status", request.getAttribute(ERROR_STATUS_CODE));
+        // message 받아옴
+        result.put("message", ex.getMessage());
+
+        Integer statusCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        return new ResponseEntity<>(result, HttpStatus.valueOf(statusCode));
+    }
+
     private void printErrorInfo(HttpServletRequest request) {
         log.info("ERROR_EXCEPTION : {}", request.getAttribute(ERROR_EXCEPTION));
         log.info("ERROR_EXCEPTION_TYPE : {}", request.getAttribute(ERROR_EXCEPTION_TYPE));
@@ -43,4 +75,6 @@ public class ErrorPageController {
 
         log.info("dispatchType={}", request.getDispatcherType());
     }
+
+
 }
