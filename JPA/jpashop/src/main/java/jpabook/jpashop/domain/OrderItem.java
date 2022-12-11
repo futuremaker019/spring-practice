@@ -24,4 +24,29 @@ public class OrderItem {
 
     private int orderPrice; // 주문 가격
     private int count;  // 주문 수량
+
+    //== 생성 메서드
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setOrderPrice(orderPrice);
+        orderItem.setCount(count);
+
+        item.removeStock(count);
+        return orderItem;
+    }
+
+    // == 비즈니스 로직 == //
+    public void cancel() {
+        // 주문했던 수량 만큼이 취소되었으므로 주면 수량을 원복해준다.
+        getItem().addStock(count);
+    }
+
+    /**
+     * 주문상품 전체 가격 조회
+     *  해당하는 Order의 Item 총 가격을 가져온다.
+     */
+    public int getTotalPrice() {
+        return getOrderPrice() * getCount();
+    }
 }
