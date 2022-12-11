@@ -1,8 +1,6 @@
 package jpabook.jpashop.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +11,7 @@ import java.util.List;
 @Table(name = "orders")   // orders를 명시하지 않으면 order로 테이블명이 지징된다.
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id
@@ -70,7 +69,6 @@ public class Order {
     }
 
     // == 비스니스 로직
-
     /**
      * 주문 취소
      */
@@ -82,6 +80,7 @@ public class Order {
 
         // 해당하는 Order의 상태값을 취소로 변경
         this.setStatus(OrderStatus.CANCEL);
+        // 각 주문상품에 대한 stock을 원복해준다.
         for (OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
@@ -93,11 +92,13 @@ public class Order {
      */
     public int getTotalPrice() {
     // 아래의 로직을 stream으로 변경이 가능하다.
-    /*  int totalPrice = 0;
+    /*
+        int totalPrice = 0;
         for (OrderItem orderItem : orderItems) {
             totalPrice += orderItem.getTotalPrice();;
         }
-        return totalPrice;*/
+        return totalPrice;
+    */
 
         return orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
     }
