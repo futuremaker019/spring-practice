@@ -27,8 +27,11 @@ public class ItemService {
      *  변경감지(Dirty checking과 @Transactional에 의해 commit 되며
      *  JPA는 flush를 통해 데비값을 수정한다.
      *
+     *  Merge는 해당 엔티티를 반환한다.
      *  Merge는 모든 필드값을 변경하기떄문에 input으로 들어오는 값이 없는 필드가 있다면
      *  NULL로 데이터가 업데이트 될수도 있다.
+     *
+     *  되도록이면 변경감지 기능을 사용해야한다.
      */
     @Transactional
     public void updateItem(Long itemId, Book param) {

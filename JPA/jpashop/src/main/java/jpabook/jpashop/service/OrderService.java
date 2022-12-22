@@ -30,6 +30,8 @@ public class OrderService {
     public Long order(Long memberId, Long itemId, int count) {
 
         // 엔티티 조회
+        // Transactional 내에서 member를 찾으면 영속성 컨텍스트 내부에서 관리되기 때문에
+        // member를 수정해도 바로 반영이 된다.
         Member member = memberRepository.findOne(memberId);
         Item item = itemRepository.findOne(itemId);
 
