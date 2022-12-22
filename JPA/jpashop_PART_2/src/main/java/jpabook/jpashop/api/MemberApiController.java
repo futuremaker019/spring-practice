@@ -17,22 +17,38 @@ public class MemberApiController {
     private final MemberService memberService;
 
     /**
-     * valid 사용시 Member내부의 유효성을 체크해준다.
-     * @param member
-     * @return
+     * valid 사용시 Member 필드에 지정한 어노테이션으로(ex:@NotEmpty 와 같은) 유효성을 체크해준다.
      */
-    @PostMapping("/api/v1/memebr")
+    @PostMapping("/api/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
         Long id = memberService.join(member);
         return new CreateMemberResponse(id);
     }
 
+    @PostMapping("/api/v2/members")
+    public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
+        Member member = new Member();
+        member.setName(request.getName());
+
+        Long id = memberService.join(member);
+        return new CreateMemberResponse(id);
+    }
+
     @Data
-    private class CreateMemberResponse {
+    static class CreateMemberRequest {
+        private String name;
+
+
+    }
+
+    @Data
+    static class CreateMemberResponse {
         private Long id;
 
         public CreateMemberResponse(Long id) {
             this.id = id;
         }
     }
+
+
 }
