@@ -11,7 +11,7 @@ spring:
   # 설정은 sprngboot document에 정의되어 있음
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
 #        show_sql: true   # sysout에 로그를 찍어줌

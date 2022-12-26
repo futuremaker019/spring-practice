@@ -37,7 +37,7 @@ public class MemberApiController {
         List<MemberDto> collect = findMembers.stream()
                 .map(m -> new MemberDto(m.getName()))
                 .collect(Collectors.toList());
-        return new Result(collect.size() ,collect);
+        return new Result(collect.size(), collect);
 
     }
 
@@ -73,7 +73,7 @@ public class MemberApiController {
     }
 
     /**
-        member를 업데이트해주는 컨트롤러를 생성한다.
+     * member를 업데이트해주는 컨트롤러를 생성한다.
      */
     @PutMapping("/api/v2/members/{id}")
     public UpdateMemberResponse updateMemberV2(
@@ -109,6 +109,7 @@ public class MemberApiController {
         private String name;
 
     }
+
     @Data
     static class UpdateMemberRequest {
         @NotEmpty
