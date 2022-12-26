@@ -9,12 +9,50 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    /**
+     * 1. 엔티티를 직접 반환하게되면 엔티티의 모든 정보가 외부에 노출되어 보안에 취약해진다.
+     * 2. 리스트형태로 바로 반환하게되면 스팩 확장에 어려움이 생긴다.
+     */
+    @GetMapping("/api/v1/members")
+    public List<Member> memberV1() {
+        return memberService.findMembers();
+    }
+
+    /**
+     * data라는 필드를 가진 Result로 한번 씌워서 보내줘야한다.
+     * 엔티티의 필드명이 변경되어도 외부로 호출되는 필드명을 동일하게 유지할수 있는 장점도 있다.
+     */
+    @GetMapping("/api/v2/members")
+    public Result memberV2() {
+        List<Member> findMembers = memberService.findMembers();
+        List<MemberDto> collect = findMembers.stream()
+                .map(m -> new MemberDto(m.getName()))
+                .collect(Collectors.toList());
+        return new Result(collect.size() ,collect);
+
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private int count;
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
+    }
 
     /**
      * valid 사용시 Member 필드에 지정한 어노테이션으로(ex:@NotEmpty 와 같은) 유효성을 체크해준다.
