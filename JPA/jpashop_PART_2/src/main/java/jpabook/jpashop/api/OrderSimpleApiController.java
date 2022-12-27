@@ -55,6 +55,15 @@ public class OrderSimpleApiController {
         return result;
     }
 
+    /**
+     * fetch join을 이용하여 쿼리가 N개 나가는것을 방지한다.
+     */
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> orderV3() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        return orders.stream().map(o -> new SimpleOrderDto(o)).collect(Collectors.toList());
+    }
+
     @Data
     static class SimpleOrderDto {
         private Long orderId;
