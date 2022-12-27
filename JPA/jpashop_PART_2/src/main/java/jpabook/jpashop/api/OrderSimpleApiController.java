@@ -5,6 +5,8 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> orderV1() {
@@ -57,11 +60,21 @@ public class OrderSimpleApiController {
 
     /**
      * fetch join을 이용하여 쿼리가 N개 나가는것을 방지한다.
+     *  엔티티 자체를 조회하기 떄문에 엔티티 수정 및 재사용이 가능하다.
      */
     @GetMapping("/api/v3/simple-orders")
     public List<SimpleOrderDto> orderV3() {
         List<Order> orders = orderRepository.findAllWithMemberDelivery();
         return orders.stream().map(o -> new SimpleOrderDto(o)).collect(Collectors.toList());
+    }
+
+    /**
+     * DTO 형태로 조회
+     *  DTO를 조회하기 때문에 검색결과에 대한 재사용성이 적다.
+     */
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> orderV4() {
+        return orderSimpleQueryRepository.findOrderDtos();
     }
 
     @Data
@@ -73,11 +86,11 @@ public class OrderSimpleApiController {
         private Address address;
 
         public SimpleOrderDto(Order order) {
-            orderId = order.getId();
-            name = order.getMember().getName();             // LAZY 초기화 (영속성 컨텍스트에 없기때문에 디비에서 가져온다.)
-            orderDate = order.getOrderDate();
-            orderStatus = order.getStatus();
-            address = order.getDelivery().getAddress();     // LAZY 초기화
+            this.orderId = order.getId();
+            this.name = order.getMember().getName();
+            this.orderDate = order.getOrderDate();
+            this.orderStatus = order.getStatus();
+            this.address = order.getDelivery().getAddress();
         }
     }
 }
