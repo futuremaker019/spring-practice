@@ -30,6 +30,11 @@ public class Member {
         this.team = team;
     }
 
+    public Member(String username, int age) {
+        this.username = username;
+        this.age = age;
+    }
+
     /**
      * 팀이 변경될시 연관관계의 팀에도 회원을 저장시켜줘야함
      */

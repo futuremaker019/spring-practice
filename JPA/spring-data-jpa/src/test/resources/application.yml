@@ -14,7 +14,7 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        #        show_sql: true   # sysout에 로그를 찍어줌
+        show_sql: true   # sysout에 로그를 찍어줌
         format_sql: true
 
 # hibernate가 생성하는 모든 SQL에 보임
