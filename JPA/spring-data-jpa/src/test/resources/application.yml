@@ -1,24 +1,24 @@
-#erver:
-#  port: 9010
-#
-#spring:
-#  datasource:
-#    url: jdbc:h2:mem:test
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
-#
-#  # 설정은 sprngboot document에 정의되어 있음
-#  jpa:
-#    hibernate:
-#      ddl-auto: create
-#    properties:
-#      hibernate:
-#        #        show_sql: true   # sysout에 로그를 찍어줌
-#        format_sql: true
-#
-## hibernate가 생성하는 모든 SQL에 보임
-#logging:
-#  level:
-#    org.hibernate.SQL : debug
-#    org.hibernate.type : trace
+erver:
+  port: 9010
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # 설정은 sprngboot document에 정의되어 있음
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        #        show_sql: true   # sysout에 로그를 찍어줌
+        format_sql: true
+
+# hibernate가 생성하는 모든 SQL에 보임
+logging:
+  level:
+    org.hibernate.SQL : debug
+    org.hibernate.type : trace
