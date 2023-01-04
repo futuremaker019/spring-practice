@@ -4,6 +4,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -173,5 +177,68 @@ public class MemberRepositoryTest {
          */
         Optional<Member> optionalMember = memberRepository.findOptionalByUsername("dfsdafa");
         System.out.println("optionalMember = " + optionalMember);
+    }
+
+    @Test
+    public void paging() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        // 페이지 계산 공식 적용
+        // totalPage = totalCount / size ...
+        // 마지막 페이지
+        int age = 10;
+
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+
+        // totalCount query가 필요가 없다. Page에서 같이 totalCount를 return 해준다.
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+
+        // DTO로 변환하여 데이터를 response 해줘야 API 스펙에 어긋나지 않는다.
+        Page<MemberDto> map = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+
+        // then
+        List<Member> content = page.getContent();
+        long totalElements = page.getTotalElements();
+
+        // 검색된 데이터 갯수
+        assertThat(content.size()).isEqualTo(3);
+        // 데이터의 해당 페이지의 데이터 총갯수
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        // 해당 페이지 넘버
+        assertThat(page.getNumber()).isEqualTo(0);
+        // 총 페이지 수
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        // 현재페이지가 처음 페이지인지 boolean return
+        assertThat(page.isFirst()).isTrue();
+        // 다음페이지가 존재하는지 boolean return
+        assertThat(page.hasNext()).isTrue();
+
+        // slice에서는 3개를 요청해도 3+1인 4개를 조회해서 더보기 등등에 활용이 가능하다.
+        Slice<Member> slicedPage = memberRepository.findListByAge(age, pageRequest);
+        List<Member> content1 = slicedPage.getContent();
+
+        // 검색된 데이터 갯수
+        assertThat(content1.size()).isEqualTo(3);
+        // 데이터의 해당 페이지의 데이터 총갯수
+//        assertThat(slicedPage.getTotalElements()).isEqualTo(5);
+        // 해당 페이지 넘버
+        assertThat(slicedPage.getNumber()).isEqualTo(0);
+        // 총 페이지 수
+//        assertThat(slicedPage.getTotalPages()).isEqualTo(2);
+        // 현재페이지가 처음 페이지인지 boolean return
+        assertThat(slicedPage.isFirst()).isTrue();
+        // 다음페이지가 존재하는지 boolean return
+        assertThat(slicedPage.hasNext()).isTrue();
+
+        // 반환타입이 List라면 리스트만 조회한다. (totalCount는 조회하지 않는다.)
+//        List<Member> page = memberRepository.findListByAge(age, pageRequest);
+
     }
 }

@@ -3,6 +3,8 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
@@ -90,6 +92,9 @@ class MemberJpaRepositoryTest {
         memberJpaRepository.save(new Member("member4", 10));
         memberJpaRepository.save(new Member("member5", 10));
 
+        // 페이지 계산 공식 적용
+        // totalPage = totalCount / size ...
+        // 마지막 페이지
         int age = 10;
         int offset = 1;
         int limit = 3;

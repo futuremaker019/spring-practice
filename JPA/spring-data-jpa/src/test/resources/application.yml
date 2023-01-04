@@ -14,7 +14,7 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        show_sql: true   # sysout에 로그를 찍어줌
+#        show_sql: true   # sysout에 로그를 찍어줌
         format_sql: true
 
 
@@ -22,4 +22,4 @@ spring:
 logging:
   level:
     org.hibernate.SQL : debug
-    org.hibernate.type : trace
+#    org.hibernate.type : trace
