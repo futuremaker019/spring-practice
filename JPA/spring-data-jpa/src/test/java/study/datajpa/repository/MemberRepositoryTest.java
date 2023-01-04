@@ -1,6 +1,5 @@
 package study.datajpa.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +13,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,9 @@ public class MemberRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private TeamJpaRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void JPA를_이용한_저장된_회원비교() throws Exception {
@@ -240,5 +244,31 @@ public class MemberRepositoryTest {
         // 반환타입이 List라면 리스트만 조회한다. (totalCount는 조회하지 않는다.)
 //        List<Member> page = memberRepository.findListByAge(age, pageRequest);
 
+    }
+
+    @Test
+    public void bulkUpdate() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        // when
+        int resultCount = memberRepository.bulkAgePlus(20);
+//        em.flush();     // update 후 남아있는 영속성 컨텍스트의 데이터를 flush하여 DB에 반영한다.
+//        em.clear();     // 반영 후, 영속성 컨텍스트를 초기화 한다.
+
+        List<Member> result = memberRepository.findByUsername("member5");
+        Member member5 = result.get(0);
+
+        // 영속성 컨텍스트에서 값을 가져오기떄문에 41이 아니라 40이 된다
+        // 이러한 상황을 방지하기위해 em.flush(), em.clear()를 사용한다.
+        // 초기화 후 DB에서 다시 조회해온다.
+        System.out.println("member5 = " + member5);
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
     }
 }
