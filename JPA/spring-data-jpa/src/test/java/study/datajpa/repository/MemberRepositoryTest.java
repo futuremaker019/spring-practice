@@ -332,4 +332,34 @@ public class MemberRepositoryTest {
         // then
 
     }
+
+    @Test
+    public void callCustom() {
+        // given
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+
+        for (Member member : memberCustom) {
+            System.out.println("member = " + member);
+        }
+        // when
+
+        // then
+
+    }
+
+
+    // 굳이 사용자정의 리포지토리를 만들지 않아도 아래와 같이 쿼리를 쪼갤수 있는 클래스를 만들어 Autowired 형식으로 받아 사용해도 무방하다.
+    // 기술이 중요한게 아니라 어떻게 분리하여 사용하는지가 중요하다.
+    @Autowired MemberQueryRepository memberQueryRepository;
+
+    @Test
+    public void callCustomRepositoryClass() {
+        // given
+        List<Member> member = memberQueryRepository.findMember();
+
+        // when
+
+        // then
+
+    }
 }
