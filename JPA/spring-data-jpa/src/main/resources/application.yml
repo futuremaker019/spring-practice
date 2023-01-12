@@ -16,8 +16,16 @@ spring:
             hibernate:
                 show_sql: true   # sysout에 로그를 찍어줌
                 format_sql: true
+
+    # Global paging 설정
+    data:
+        web:
+            pageable:
+                default-page-size: 10
+                max-page-size: 2000
 # hibernate가 생성하는 모든 SQL에 보임
 logging:
     level:
         org.hibernate.SQL : debug
 #        org.hibernate.type : trace
+
