@@ -16,6 +16,7 @@ import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import static study.querydsl.entity.QMember.*;
 @Transactional
 public class QuerydslBasicTest {
 
-    @Autowired
+    @PersistenceContext
     EntityManager em;
 
     JPAQueryFactory queryFactory;
@@ -142,5 +143,33 @@ public class QuerydslBasicTest {
         assertThat(member5.getUsername()).isEqualTo("member5");
         assertThat(member6.getUsername()).isEqualTo("member6");
         assertThat(memberNull.getUsername()).isNull();
+    }
+
+    @Test
+    public void paging1() {
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)      // 시작 데이터 위치
+                .limit(2)       // 데이터 갯수
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(2);
+
+    }
+
+    @Test
+    public void paging2() {
+        QueryResults<Member> queryResults = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)      // 시작 데이터 위치
+                .limit(2)       // 데이터 갯수
+                .fetchResults();
+
+        assertThat(queryResults.getTotal()).isEqualTo(4);
+        assertThat(queryResults.getLimit()).isEqualTo(2);
+        assertThat(queryResults.getOffset()).isEqualTo(1);
+        assertThat(queryResults.getResults().size()).isEqualTo(2);
     }
 }
