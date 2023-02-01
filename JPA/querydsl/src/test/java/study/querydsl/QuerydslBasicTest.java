@@ -18,7 +18,9 @@ import study.querydsl.entity.QTeam;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 import java.util.List;
 
@@ -301,5 +303,58 @@ public class QuerydslBasicTest {
         for (Tuple tuple : result) {
             System.out.println("tuple = " + tuple);
         }
+    }
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
+
+    @Test
+    public void fetchJoinNo() {
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+        assertThat(loaded).as("폐치 조인 미적용").isFalse(); // 폐치 조인이 적용되지 않은 상태
+    }
+
+    @Test
+    public void fetchJoinUse() {
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .join(member.team, team).fetchJoin()    // member를 조회시 member에 연관된 team 또한 가져온다. fetchJoin()을 선언하여 가져온다.
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+        assertThat(loaded).as("폐치 조인 적용").isTrue(); // 폐치 조인이 적용되지 않은 상태
+
+        /**
+         * 실행된 sql
+         *
+         *         select
+         *             member0_.id as id1_1_0_,
+         *             team1_.id as id1_2_1_,
+         *             member0_.age as age2_1_0_,
+         *             member0_.team_id as team_id4_1_0_,
+         *             member0_.username as username3_1_0_,
+         *             team1_.name as name2_2_1_
+         *         from
+         *             member member0_
+         *         inner join
+         *             team team1_
+         *                 on member0_.team_id=team1_.id
+         *         where
+         *             member0_.username=?
+         */
     }
 }
