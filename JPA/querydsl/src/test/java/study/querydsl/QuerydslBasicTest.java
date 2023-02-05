@@ -643,4 +643,61 @@ public class QuerydslBasicTest {
          */
 
     }
+
+
+    /**
+     * 중급문법 시작
+     *  프로젝션과 결과 반환 - 기본
+     */
+    @Test
+    public void simpleProjection() {
+        // given
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+
+        /**
+         * sql
+         *
+         *     select
+         *         member1.username
+         *     from
+         *         Member member1
+         *
+         */
+
+    }
+
+    @Test
+    public void tupleProjection() {
+        // given
+        List<Tuple> result = queryFactory
+                .select(member.username, member.age)    // 원하는 데이터를 찍어서 가져온다면 Tuple에 담긴다.
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            String username = tuple.get(member.username);
+            Integer age = tuple.get(member.age);
+            System.out.println("username = " + username);
+            System.out.println("age = " + age);
+        }
+
+        /**
+         *
+         * sql
+         *
+         *     select
+         *         member1.username,
+         *         member1.age
+         *     from
+         *         Member member1
+         */
+
+    }
 }
