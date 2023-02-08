@@ -3,13 +3,18 @@ package study.querydsl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.UserDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
@@ -71,7 +76,7 @@ public class QuerydslBasicTest {
 
     @Test
     public void startQuerydsl() {
-         QMember m1 = new QMember("m1");
+        QMember m1 = new QMember("m1");
 
         Member findMember = queryFactory
                 .select(member)
@@ -237,12 +242,10 @@ public class QuerydslBasicTest {
     }
 
     /**
-     *
      * 세타 조인
      * 회원의 이름이 팀 이름과 동일한 같은 회원 조회
-     *    모든회원과 모든팀을 가져와 조인시킨후 where 절에서 필터링하는 방식이다.
+     * 모든회원과 모든팀을 가져와 조인시킨후 where 절에서 필터링하는 방식이다.
      * outer 조인이 불가능함 - 연관관계가 없기때문에 불가능 (그러나 on을 사용하면 가능)
-     *
      */
     @Test
     public void theta_join() {
@@ -282,7 +285,7 @@ public class QuerydslBasicTest {
 
     /**
      * 연관관게가 없는 엔티티 외부 조인
-     *  회원의 이름이 팀 이름과 같은 대상 외부 조인
+     * 회원의 이름이 팀 이름과 같은 대상 외부 조인
      */
     @Test
     public void join_on_no_relation() {
@@ -323,7 +326,7 @@ public class QuerydslBasicTest {
          *
          * sql
          *
-                 select
+         select
          *          member0_.id as id1_1_,
          *          member0_.age as age2_1_,
          *          member0_.team_id as team_id4_1_,
@@ -373,7 +376,7 @@ public class QuerydslBasicTest {
 
     /**
      * com.querydsl.jpa.JPAExpression 사용
-     *  나이가 가장 많은 회원 조회
+     * 나이가 가장 많은 회원 조회
      */
     @Test
     public void subQuery() {
@@ -614,8 +617,8 @@ public class QuerydslBasicTest {
 
     /**
      * 문자더하기
-     * 
-     *  Enum 처리시 stringValue를 사용한단다. 수업 자료 보자
+     * <p>
+     * Enum 처리시 stringValue를 사용한단다. 수업 자료 보자
      */
     @Test
     public void concat() {
@@ -647,7 +650,7 @@ public class QuerydslBasicTest {
 
     /**
      * 중급문법 시작
-     *  프로젝션과 결과 반환 - 기본
+     * 프로젝션과 결과 반환 - 기본
      */
     @Test
     public void simpleProjection() {
@@ -699,5 +702,165 @@ public class QuerydslBasicTest {
          *         Member member1
          */
 
+    }
+
+    /**
+     * JPQL을 이용하면 select 절에 해당 DTO를 정확히 지정해줘야하는 번거로움이 있다.
+     */
+    @Test
+    public void findDtoByJPQL() {
+        List<MemberDto> resultList = em.createQuery("select new study.querydsl.dto.MemberDto(m.username, m.age) from Member m", MemberDto.class)
+                .getResultList();
+
+        for (MemberDto memberDto : resultList) {
+            System.out.println("memberDto = " + memberDto);
+        }
+
+        /**
+         *
+         * sql
+         *
+         *         select
+         *             new study.querydsl.dto.MemberDto(m.username, m.age)
+         *         from
+         *             Member m
+         *
+         *
+         *         select
+         *             member0_.username as col_0_0_,
+         *             member0_.age as col_1_0_
+         *         from
+         *             member member0_
+         *
+         */
+    }
+
+    /**
+     * Projection에 특정 class를 넣어주면 해당하는 DTO의 클래스에 값을 넣어 반환해준다.
+     */
+    @Test
+    public void findDtoBySetter() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.bean(MemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+
+        /**
+         *     select
+         *         member1.username,
+         *         member1.age
+         *     from
+         *         Member member1
+         *
+         */
+    }
+
+    /**
+     * Projections.field를 사용하면 getter setter가 필요없이 값을 필드에 넣어준다.
+     */
+    @Test
+    public void findDtoByField() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.fields(MemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+
+        /**
+         *
+         * sql
+         *
+         *      select
+         *         member1.username,
+         *         member1.age
+         *     from
+         *         Member member1
+         *
+         */
+    }
+
+    /**
+     * constructor 방식은 조회시 해당하는 데이터타입이 맞으면 값을 넣어준다.
+     */
+    @Test
+    public void findDtoByConstructor() {
+        List<UserDto> result = queryFactory
+                .select(Projections.constructor(UserDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (UserDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+
+        /**
+         *
+         * sql
+         *
+         *     select
+         *         member1.username,
+         *         member1.age
+         *     from
+         *         Member member1
+         *
+         */
+    }
+
+    @Test
+    public void findUserDto() {
+        QMember memberSub = new QMember("memberSub");
+        List<UserDto> result = queryFactory
+                .select(Projections.fields(UserDto.class,
+                        member.username.as("name"),
+                        ExpressionUtils.as(JPAExpressions
+                                .select(memberSub.age.max())
+                                .from(memberSub), "age")
+                ))
+                .from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("userDto = " + userDto);
+        }
+        /**
+         * 필드명이 다르면 조회는 되지만 값은 들어가지 않으므로 alias를 설정해줘야 한다.
+         *
+         * age 필드가 없을때, age를 subquery를 사용하여 만들어준다.
+         *  ExpressionUtils.as(JPAExpressions
+         *       .select(memberSub.age.max())
+         *       .from(memberSub), "age")
+         */
+
+        /**
+         *     select
+         *         member1.username as name,
+         *         member1.age
+         *     from
+         *         Member member1
+         *
+         *     // 서브쿼리 사용시
+         *     select
+         *         member1.username as name,
+         *         (select
+         *             max(memberSub.age)
+         *         from
+         *             Member memberSub) as age
+         *     from
+         *         Member member1
+         *
+         */
     }
 }
