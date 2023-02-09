@@ -1028,4 +1028,73 @@ public class QuerydslBasicTest {
 
         System.out.println("count = " + count);
     }
+
+    @Test
+    public void sqlFunction() throws Exception {
+        List<String> result = queryFactory
+                .select(Expressions.stringTemplate("function('replace', {0}, {1}, {2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetch();
+
+        /**
+         * JPQL
+         *    select
+         *         function('replace',
+         *         member1.username,
+         *         ?1,
+         *         ?2)
+         *     from
+         *         Member member1
+         *
+         * sql
+         *         select
+         *             replace(member0_.username,
+         *             ?,
+         *             ?) as col_0_0_
+         *         from
+         *             member member0_
+         */
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @Test
+    public void sqpFunction2() throws Exception {
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+//                .where(member.username.eq(
+//                        Expressions.stringTemplate("function('lower', {0})", member.username)
+//                ))
+                .where(member.username.eq(member.username.lower()))     // 기본적인 ANSI 표준 sql function은 querydsl에 정의 되어있다.
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+
+        /**
+         * JPQL
+         *
+         *     select
+         *         member1.username
+         *     from
+         *         Member member1
+         *     where
+         *         member1.username = lower(member1.username)
+         *
+         * sql
+         *
+         *      select
+         *          member0_.username as col_0_0_
+         *      from
+         *          member member0_
+         *      where
+         *          member0_.username=lower(member0_.username)
+         *
+         */
+    }
 }
