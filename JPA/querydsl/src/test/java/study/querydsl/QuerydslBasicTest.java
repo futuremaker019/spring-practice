@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberDto;
 import study.querydsl.dto.QMemberDto;
@@ -960,5 +961,71 @@ public class QuerydslBasicTest {
 
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    @Test
+    public void bulkUpdate() {
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        System.out.println("count = " + count);
+
+        /**
+         *     update
+         *         Member member1
+         *     set
+         *         member1.username = ?1
+         *     where
+         *         member1.age < ?2
+         *
+         */
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        em.flush();
+        em.clear();
+
+        for (Member member1 : result) {
+            System.out.println("member1 = " + member1);
+        }
+
+        /**
+         * 벌크 수정 및 삭제를 진행하면 영속성 컨텍스트는 변경이 되지 않고
+         * DB에 직접 반영을 하기 떄문에, Select시 업데이트 되지않은 정보가 조회된다.
+         *
+         * 그러므로 em.flush, em.clear를 통해 영속성 컨텍스트를 초기화 시켜줘야 한다.
+         */
+    }
+
+    @Test
+    public void bulkAdd() {
+        long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+
+        System.out.println("count = " + count);
+
+        /**
+         *    update
+         *        member
+         *    set
+         *        age=age+?
+         */
+    }
+
+    @Test
+    public void bulkDelete() {
+        long count = queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+        System.out.println("count = " + count);
     }
 }
