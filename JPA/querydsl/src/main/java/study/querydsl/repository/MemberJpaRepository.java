@@ -1,6 +1,7 @@
 package study.querydsl.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import static study.querydsl.entity.QMember.member;
 
 @Repository
+//@RequiredArgsConstructor
 public class MemberJpaRepository {
 
     private final EntityManager em;
@@ -21,6 +23,17 @@ public class MemberJpaRepository {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
     }
+
+    /**
+     * JPAQueryFactory를 Bean으로 등록 후 생성자에서 받아주거나 위의 생성자 형태로 만들어도 된다.
+     *  (Bean은 main 메서드쪽에서 생성했음)
+     *
+     * Lombok의 @RequiredArgument를 선언하여 생성자를 만들어도 된다.
+     */
+//    public MemberJpaRepository(EntityManager em, JPAQueryFactory queryFactory) {
+//        this.em = em;
+//        this.queryFactory = queryFactory;
+//    }
 
     public void save(Member member) {
         em.persist(member);
