@@ -124,7 +124,7 @@ class MemberJpaRepositoryTest {
 
         List<MemberTeamDto> result = memberJpaRepository.search(condition);
 
-        assertThat(result).extracting("username").containsExactly("member3", "member4");
+        assertThat(result).extracting("").containsExactly("member4");
 
 
         /**
