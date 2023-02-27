@@ -120,8 +120,9 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
         /**
          *  첫 페이지의 컨텐츠가 3개이거나 마지막 페이지의 컨텐츠가 3개이면 굳이 total값을 가지고오지 않아도 되기떄문에
          *  SpringDataJpa가 제공하는 PageableExecutionUtils를 이용하여 count한다.
-         */
-        return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+        */
+          return PageableExecutionUtils.getPage(contents, pageable, countQuery::fetchCount);
+//        return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
 //        return new PageImpl<>(contents, pageable, total);
     }
 
