@@ -1,6 +1,6 @@
 rootProject.name = 'security-gradle3'
 
-["comp", "web", "server"].each {
+["comp", "web", "server", "test"].each {
 
     def compDir = new File(rootDir, it)
     if(!compDir.exists()){

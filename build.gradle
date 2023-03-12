@@ -55,7 +55,7 @@ subprojects {
 }
 
 
-["comp", "web"].each {
+["comp", "test", "web"].each {
     def subProjectDir = new File(projectDir, it)
     subProjectDir.eachDir {dir->
         def projectName = ":${it}-${dir.name}"
@@ -70,8 +70,7 @@ subprojects {
     subProjectDir.eachDir {dir->
         def projectName = ":${it}-${dir.name}"
         project(projectName){
-            bootJar.enabled(false)
-            jar.enabled(true)
+
         }
     }
 }
