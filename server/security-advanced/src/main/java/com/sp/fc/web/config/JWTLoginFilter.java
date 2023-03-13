@@ -56,7 +56,9 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         //
         SpUser user = (SpUser) authResult.getPrincipal();
 
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + JWTUtil.makeAuthToken(user));
+        response.setHeader("auth_token", JWTUtil.makeAuthToken(user));
+        response.setHeader("refresh_token", JWTUtil.makeRefreshToken(user));
+
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(user));
 

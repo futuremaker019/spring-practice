@@ -11,7 +11,7 @@ public class JWTUtil {
 
     private static final Algorithm ALGORITHM = Algorithm.HMAC256("goohyun");
     // 만료시간
-    private static final long AUTH_TIME = 20 * 60;
+    private static final long AUTH_TIME = 2;
     // refresh 토큰 생성시간
     private static final long REFRESH_TIME = 60 * 60 * 24 * 7;
 
