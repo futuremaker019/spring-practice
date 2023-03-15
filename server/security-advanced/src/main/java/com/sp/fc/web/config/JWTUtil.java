@@ -21,6 +21,9 @@ public class JWTUtil {
      */
     public static String makeAuthToken(SpUser user) {
         // 로그인한 사용자의 username을 담은 token을 생성한다.
+
+        System.out.println("Instant.now().getEpochSecond() : " + Instant.now().getEpochSecond());
+
         return JWT.create().withSubject(user.getUsername())
                 // 만료시간을 담는다.
                 .withClaim("exp", Instant.now().getEpochSecond() + AUTH_TIME)
@@ -30,7 +33,7 @@ public class JWTUtil {
     /**
      * Refresh 토큰 생성
      */
-    public String makeRefreshToken(SpUser user) {
+    public static String makeRefreshToken(SpUser user) {
         return JWT.create().withSubject(user.getUsername())
                 // 만료시간을 담는다.
                 .withClaim("exp", Instant.now().getEpochSecond() + REFRESH_TIME)

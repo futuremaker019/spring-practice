@@ -36,7 +36,7 @@ public class AdvancedSecurityConfig extends WebSecurityConfigurerAdapter {
          *      2-1. 토큰을 이용한 Login filter를 구현하여 authentication 을 한다.
          *      2-2. 토큰을 이용한 check filter를 구현하여 authorization 을 한다.
          */
-        JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManager());
+        JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManager(), spUserService);
         JWTCheckFilter checkFilter = new JWTCheckFilter(authenticationManager(), spUserService);
 
         http

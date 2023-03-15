@@ -29,7 +29,7 @@ public class JWTCheckFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
         // bearer가 없다면 내부 exception이나 다른 필터를 타서 login page로 이동해야하기 떄문에 필터를 넘겨준다.
-        if (bearer == null || !bearer.startsWith("Bearer")) {
+        if (bearer == null || !bearer.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
