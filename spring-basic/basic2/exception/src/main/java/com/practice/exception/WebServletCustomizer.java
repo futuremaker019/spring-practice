@@ -5,12 +5,12 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
 
-@Component
-public class WebServletCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
-    @Override
-    public void customize(ConfigurableWebServerFactory factory) {
-        ErrorPage errorPageEx = new ErrorPage(RuntimeException.class, "/error-page/500");
-
-        factory.addErrorPages(errorPageEx);
-    }
-}
+//@Component
+//public class WebServletCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
+//    @Override
+//    public void customize(ConfigurableWebServerFactory factory) {
+//        ErrorPage errorPageEx = new ErrorPage(RuntimeException.class, "/error-page/500");
+//
+//        factory.addErrorPages(errorPageEx);
+//    }
+//}
