@@ -1,5 +1,6 @@
 package com.example.jwttutorial.dto;
 
+import com.example.jwttutorial.entity.UserAccount;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -25,4 +26,11 @@ public class UserDto {
     @NotNull
     @Size(min = 3, max = 50)
     private String nickname;
+
+    public static UserDto from(UserAccount entity) {
+        return UserDto.builder()
+                .nickname(entity.getNickname())
+                .username(entity.getUsername())
+                .build();
+    }
 }
