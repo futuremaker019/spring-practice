@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:fragment="configFragment">
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>SLiPP Java Web Programming</title>
+
+    <!-- 공통으로 쓰이는 css파일을넣는다.-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    -->
+<!--    &lt;!&ndash;[if lt IE 9]>-->
+<!--    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>-->
+<!--    <![endif]&ndash;&gt;-->
+    <link href="/css/styles.css" rel="stylesheet">
+
+    <!-- 컨텐츠페이지의 CSS 영역이 들어감 -->
+    <th:block layout:fragment="css"></th:block>
+
+    <!-- 공통으로 쓰이는 css파일을넣는다.-->
+
+    <!--    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>-->
+    <!--    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>-->
+
+    <!-- 컨텐츠페이지의 스크립트 영역이 들어감 -->
+    <th:block layout:fragment="script">
+        <script src="/js/jquery-2.2.0.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/scripts.js"></script>
+    </th:block>
+</head>
+
+</html>
