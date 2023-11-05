@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:h2:~/eatgo/data
+  jpa:
+    hibernate:
+      ddl-auto: update
