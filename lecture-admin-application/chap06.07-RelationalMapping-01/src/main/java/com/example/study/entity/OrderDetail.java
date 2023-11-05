@@ -1,0 +1,46 @@
+package com.example.study.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@ToString(exclude = {"orderGroup", "item"})
+public class OrderDetail {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String status;
+
+    private LocalDateTime arrivalDate;
+
+    private Integer Quantity;
+
+    private BigDecimal totalPrice;
+
+    private LocalDateTime createdAt;
+
+    private String createdBy;
+
+    private LocalDateTime updatedAt;
+
+    private String updatedBy;
+
+    // OrderDetail N : 1 orderGroup
+    @ManyToOne
+    private OrderGroup orderGroup;
+
+    // orderDetail N : 1 item  각 아이템마다 여러개의 주문건이 존재할수 있다.
+    @ManyToOne
+    private Item item;
+}
