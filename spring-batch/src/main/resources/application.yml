@@ -1,29 +1,26 @@
 spring:
-  profiles:
-    active: local
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
   datasource:
     hikari:
-      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
----
-spring:
-  config:
-    activate:
-      on-profile: mysql
-  datasource:
-    hikari:
-      jdbc-url: ${LOCAL_DB_URL}
-      username: ${LOCAL_DB_USERNAME}
-      password: ${LOCAL_DB_PASSWORD}
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      meta:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/meta_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+        username: root
+        password: 1234
+      data:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/data_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+        username: root
+        password: 1234
   batch:
+    job:
+      enabled: false
     jdbc:
       initialize-schema: always
+      schema: classpath:schema.sql
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
